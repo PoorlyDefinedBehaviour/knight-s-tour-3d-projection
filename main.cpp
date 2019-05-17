@@ -7,7 +7,7 @@
 
 int main()
 {
-    SDLController::init(600, 600);
+    SDLController::create_window(800, 800);
     Board board;
     board.resize(8);
 
@@ -24,16 +24,16 @@ int main()
     {
         frameStart = SDL_GetTicks();
 
+        SDLController::clear_screen();
+        SDLController::handle_events();
         board.draw();
         black_knight.show_path();
-        SDLController::handleEvents();
+        SDLController::update_screen();
 
         frameTime = SDL_GetTicks() - frameStart;
         if (frameDelay > frameTime)
         {
             SDL_Delay(frameDelay - frameTime);
         }
-
-        SDLController::updateScreen();
     }
 }

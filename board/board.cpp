@@ -3,51 +3,18 @@
 
 Board::Board()
 {
-    this->resize(this->size);
-}
-
-Board::~Board()
-{
-    if (this->elements)
-    {
-        for (int i = 0; i < this->size; ++i)
-            delete[] this->elements[i];
-    }
+    this->matrix.resize(this->size, this->size);
 }
 
 void Board::resize(int size)
 {
-    if (this->elements)
-    {
-        for (int i = 0; i < this->size; ++i)
-            delete[] this->elements[i];
-    }
+    this->matrix.resize(size, size);
 
     this->size = size;
-
-    this->elements = new Cell *[this->size];
-
-    for (int i = 0; i < this->size; ++i)
-    {
-        this->elements[i] = new Cell[this->size];
-    }
+    this->cell_width = SDLController::WINDOW_WIDTH / this->size;
+    this->cell_height = SDLController::WINDOW_HEIGHT / this->size;
 
     this->reset();
-}
-
-int Board::get_size() const noexcept
-{
-    return this->size;
-}
-
-void Board::visit(int row, int column)
-{
-    this->elements[row][column].visited = true;
-}
-
-bool Board::is_visited(int row, int column) const noexcept
-{
-    return this->elements[row][column].visited;
 }
 
 void Board::reset()
@@ -56,16 +23,43 @@ void Board::reset()
     {
         for (int j = 0; j < this->size; ++j)
         {
-            this->elements[i][j] = Cell();
+            this->matrix.elements[i][j] = Cell();
         }
     }
 }
 
+int Board::get_size() const noexcept
+{
+    return this->size;
+}
+
+int Board::get_cell_width() const noexcept
+{
+    return this->cell_width;
+}
+
+int Board::get_cell_height() const noexcept
+{
+    return this->cell_height;
+}
+
+void Board::visit(int row, int column)
+{
+    this->matrix.elements[row][column].visited = true;
+}
+
+void Board::unvisit(int row, int column)
+{
+    this->matrix.elements[row][column].visited = false;
+}
+
+bool Board::is_visited(int row, int column) const noexcept
+{
+    return this->matrix.elements[row][column].visited;
+}
+
 void Board::draw()
 {
-    const int CELL_WIDTH = SDLController::WINDOW_WIDTH / this->size;
-    const int CELL_HEIGHT = SDLController::WINDOW_HEIGHT / this->size;
-
     /*
      * light blue = rgb(106, 137, 204)
      * red = rgb(198, 40, 40)
@@ -74,24 +68,19 @@ void Board::draw()
     {
         for (int j = 0; j < this->size; ++j)
         {
-
-            if (this->elements[i][j].visited)
+            if ((i + j) % 2 == 0)
             {
-                SDLController::setRendererColor(198, 40, 40);
-            }
-            else if ((i + j) % 2 == 0)
-            {
-                SDLController::setRendererColor(255, 255, 255);
+                SDLController::set_color(255, 255, 255);
             }
             else
             {
-                SDLController::setRendererColor(106, 137, 204);
+                SDLController::set_color(106, 137, 204);
             }
 
-            SDLController::renderRectangle(CELL_WIDTH,
-                                           CELL_HEIGHT,
-                                           i * CELL_WIDTH,
-                                           j * CELL_HEIGHT);
+            SDLController::render_rectangle(this->cell_width,
+                                            this->cell_height,
+                                            i * this->cell_width,
+                                            j * this->cell_height);
         }
     }
 }

@@ -1,13 +1,14 @@
 #include "sdlcontroller.h"
 
 #include <cstdlib>
+#include <vector>
 
 SDL_Window *SDLController::window;
 SDL_Renderer *SDLController::renderer;
 int SDLController::WINDOW_WIDTH;
 int SDLController::WINDOW_HEIGHT;
 
-void SDLController::init(const int &_width, const int &_height, const bool &fullscreen)
+void SDLController::create_window(const int &_width, const int &_height, const bool &fullscreen)
 {
     //ShowWindow(GetConsoleWindow(), SW_HIDE);
 
@@ -33,7 +34,7 @@ void SDLController::init(const int &_width, const int &_height, const bool &full
     SDL_SetRenderDrawColor(renderer, 0xff, 0xb4, 0xff, 0xff);
 }
 
-SDL_Texture *SDLController::loadImage(const char *file)
+SDL_Texture *SDLController::load_image(const char *file)
 {
     /*
     SDL_Surface* tempImage = IMG_Load(file);
@@ -48,7 +49,7 @@ SDL_Texture *SDLController::loadImage(const char *file)
     return nullptr;
 }
 
-void SDLController::handleEvents()
+void SDLController::handle_events()
 {
     SDL_Event event;
     SDL_PumpEvents();
@@ -62,7 +63,7 @@ void SDLController::handleEvents()
     }
 }
 
-void SDLController::setRendererColor(const int &r, const int &g, const int &b, const int &a)
+void SDLController::set_color(const int &r, const int &g, const int &b, const int &a)
 {
     SDL_SetRenderDrawColor(renderer, r, g, b, a);
 }
@@ -79,7 +80,7 @@ void SDLController::render(SDL_Texture *texture, SDL_Rect *source, SDL_Rect *des
     }
 }
 
-void SDLController::renderRectangle(const int &width, const int &height, const float &x, const float &y)
+void SDLController::render_rectangle(const int &width, const int &height, const float &x, const float &y)
 {
     SDL_Rect rectangle;
     rectangle.x = x;
@@ -90,10 +91,24 @@ void SDLController::renderRectangle(const int &width, const int &height, const f
     SDL_RenderFillRect(renderer, &rectangle);
 }
 
-void SDLController::updateScreen()
+void SDLController::render_line(int x1, int y1, int x2, int y2)
+{
+    SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
+}
+
+void SDLController::render_lines(SDL_Point points[], int count)
+{
+    SDL_RenderDrawLines(renderer, points, count);
+}
+
+void SDLController::clear_screen()
+{
+    SDL_RenderClear(renderer);
+}
+
+void SDLController::update_screen()
 {
     SDL_RenderPresent(renderer);
-    SDL_RenderClear(renderer);
 }
 
 void SDLController::exit()

@@ -1,34 +1,27 @@
 #pragma once
 
+#include <vector>
+
 template <typename T>
 class Matrix
 {
 public:
   int rows;
   int columns;
-  T **elements = nullptr;
+  std::vector<std::vector<T>> elements;
 
   Matrix(int _rows = 0, int _columns = 0)
       : rows(_rows), columns(_columns)
   {
+    this->resize(this->rows, this->columns);
   }
 
   void resize(int rows, int columns)
   {
-    if (this->elements)
-    {
-      for (int i = 0; i < this->rows; ++i)
-        delete[] this->elements[i];
-    }
+    this->elements = std::vector<std::vector<T>>(rows, std::vector<T>(columns));
 
     this->rows = rows;
     this->columns = columns;
-
-    this->elements = new T *[this->rows];
-    for (int i = 0; i < this->rows; ++i)
-      this->elements[i] = new T[this->columns];
-
-    this->fill([]() -> int { return -1; });
   }
 
   template <typename lambda>
