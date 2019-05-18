@@ -1,12 +1,11 @@
 #pragma once
-#include "../cell/cell.h"
 #include "../matrix/matrix.h"
 
 class Board
 {
 private:
     int size = 7;
-    Matrix<Cell> matrix;
+    Matrix matrix;
     int cell_width;
     int cell_height;
 

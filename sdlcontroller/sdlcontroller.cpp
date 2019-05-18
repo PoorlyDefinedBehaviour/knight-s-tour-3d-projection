@@ -80,7 +80,7 @@ void SDLController::render(SDL_Texture *texture, SDL_Rect *source, SDL_Rect *des
     }
 }
 
-void SDLController::render_rectangle(const int &width, const int &height, const float &x, const float &y)
+void SDLController::render_rectangle(const float &x, const float &y, const int &width, const int &height)
 {
     SDL_Rect rectangle;
     rectangle.x = x;
@@ -89,6 +89,11 @@ void SDLController::render_rectangle(const int &width, const int &height, const 
     rectangle.h = height;
 
     SDL_RenderFillRect(renderer, &rectangle);
+}
+
+void SDLController::render_point(int x, int y)
+{
+    SDL_RenderDrawPoint(renderer, x, y);
 }
 
 void SDLController::render_line(int x1, int y1, int x2, int y2)
@@ -101,9 +106,11 @@ void SDLController::render_lines(SDL_Point points[], int count)
     SDL_RenderDrawLines(renderer, points, count);
 }
 
-void SDLController::clear_screen()
+void SDLController::clear_screen(int r, int g, int b)
 {
     SDL_RenderClear(renderer);
+    set_color(r, g, b);
+    render_rectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 
 void SDLController::update_screen()

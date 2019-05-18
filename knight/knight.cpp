@@ -26,10 +26,6 @@ void Knight::tour(Board *board)
     }
   }
 
-  for (const auto &row : this->solution.elements)
-    for (const auto &element : row)
-      std::cout << element << ' ';
-
   std::sort(this->path.begin(),
             this->path.end(),
             [](const auto &lhs, const auto &rhs) -> bool {

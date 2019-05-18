@@ -22,7 +22,7 @@ private:
   };
 
   MoveSet moves;
-  Matrix<int> solution;
+  Matrix solution;
   std::vector<MatrixPosition> path;
   Board *current_board;
 

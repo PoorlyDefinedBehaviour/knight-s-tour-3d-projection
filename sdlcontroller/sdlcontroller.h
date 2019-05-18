@@ -14,11 +14,12 @@ public:
                        SDL_Rect *destination,
                        SDL_Rect *source = nullptr,
                        const SDL_RendererFlip &flip = SDL_FLIP_NONE);
-    static void render_rectangle(const int &width, const int &height, const float &x, const float &y);
+    static void render_rectangle(const float &x, const float &y, const int &width, const int &height);
+    static void render_point(int x, int y);
     static void render_line(int x1, int y1, int x2, int y2);
     static void render_lines(SDL_Point points[], int count);
     static void set_color(const int &r, const int &g, const int &b, const int &a = 0);
-    static void clear_screen();
+    static void clear_screen(int r = 0, int g = 0, int b = 0);
     static void update_screen();
     static void exit();
 

@@ -23,7 +23,7 @@ void Board::reset()
     {
         for (int j = 0; j < this->size; ++j)
         {
-            this->matrix.elements[i][j] = Cell();
+            this->matrix.elements[i][j] = -1;
         }
     }
 }
@@ -45,17 +45,17 @@ int Board::get_cell_height() const noexcept
 
 void Board::visit(int row, int column)
 {
-    this->matrix.elements[row][column].visited = true;
+    this->matrix.elements[row][column] = 1;
 }
 
 void Board::unvisit(int row, int column)
 {
-    this->matrix.elements[row][column].visited = false;
+    this->matrix.elements[row][column] = -1;
 }
 
 bool Board::is_visited(int row, int column) const noexcept
 {
-    return this->matrix.elements[row][column].visited;
+    return this->matrix.elements[row][column] != -1;
 }
 
 void Board::draw()
@@ -77,10 +77,10 @@ void Board::draw()
                 SDLController::set_color(106, 137, 204);
             }
 
-            SDLController::render_rectangle(this->cell_width,
-                                            this->cell_height,
-                                            i * this->cell_width,
-                                            j * this->cell_height);
+            SDLController::render_rectangle(i * this->cell_width,
+                                            j * this->cell_height,
+                                            this->cell_width,
+                                            this->cell_height);
         }
     }
 }
