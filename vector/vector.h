@@ -1,13 +1,10 @@
 #pragma once
 
-/**
- * TODO: add vector methods later
- * */
-class Vector
+class Vector3D
 {
 private:
 public:
-  Vector(float _x, float _y, float _z = 0);
+  Vector3D(float _x, float _y, float _z = 0);
   int x;
   int y;
   int z = 0;

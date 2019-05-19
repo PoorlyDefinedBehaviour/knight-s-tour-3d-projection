@@ -17,16 +17,16 @@ public:
   void print();
   void resize(int rows, int columns);
   static Matrix dot_product(const Matrix &a, const Matrix &b);
-  static Matrix dot_product(const Matrix &a, const Vector &b);
+  static Matrix dot_product(const Matrix &a, const Vector3D &b);
   Matrix add_scalar(int number);
   Matrix subtract_scalar(int number);
   Matrix multiply_scalar(int number);
   Matrix element_wise_multiply(const Matrix &other);
   Matrix subtract(const Matrix &other);
   Matrix dot_product(const Matrix &other);
-  Matrix dot_product(const Vector &other);
+  Matrix dot_product(const Vector3D &other);
   Matrix transpose();
-  Vector to_vector();
+  Vector3D to_vector();
   std::vector<double> to_array();
 
   template <typename lambda>

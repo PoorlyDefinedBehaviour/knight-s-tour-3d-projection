@@ -49,7 +49,7 @@ Matrix Matrix::dot_product(const Matrix &a, const Matrix &b)
   return result;
 }
 
-Matrix Matrix::dot_product(const Matrix &a, const Vector &b)
+Matrix Matrix::dot_product(const Matrix &a, const Vector3D &b)
 {
   Matrix new_matrix(3, 1);
   new_matrix.elements[0][0] = b.x;
@@ -59,7 +59,7 @@ Matrix Matrix::dot_product(const Matrix &a, const Vector &b)
   return dot_product(a, new_matrix);
 }
 
-Matrix Matrix::dot_product(const Vector &other)
+Matrix Matrix::dot_product(const Vector3D &other)
 {
   Matrix new_matrix(3, 1);
   new_matrix.elements[0][0] = other.x;
@@ -165,11 +165,11 @@ Matrix Matrix::transpose()
   return result;
 }
 
-Vector Matrix::to_vector()
+Vector3D Matrix::to_vector()
 {
-  return Vector(this->elements[0][0],
-                this->elements[1][0],
-                this->rows > 2 ? this->elements[2][0] : 0);
+  return Vector3D(this->elements[0][0],
+                  this->elements[1][0],
+                  this->rows > 2 ? this->elements[2][0] : 0);
 }
 
 std::vector<double> Matrix::to_array()

@@ -2,12 +2,20 @@
 
 #include <cstdlib>
 #include <vector>
+#include <cmath>
 #include <iostream>
 
 SDL_Window *SDLController::window;
 SDL_Renderer *SDLController::renderer;
 int SDLController::WINDOW_WIDTH;
 int SDLController::WINDOW_HEIGHT;
+Matrix SDLController::projection;
+Matrix SDLController::rotation_z;
+Matrix SDLController::rotation_x;
+Matrix SDLController::rotation_y;
+Matrix SDLController::isometric;
+float SDLController::camera_view;
+std::vector<Vector3D> SDLController::basic_cube_vertices;
 
 void SDLController::create_window(const int &_width, const int &_height, const bool &fullscreen)
 {
@@ -33,6 +41,51 @@ void SDLController::create_window(const int &_width, const int &_height, const b
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
     SDL_SetRenderDrawColor(renderer, 0xff, 0xb4, 0xff, 0xff);
+
+    camera_view = 0;
+
+    projection.resize(2, 3);
+    rotation_z.resize(3, 3);
+    rotation_x.resize(3, 3);
+    rotation_y.resize(3, 3);
+
+    projection.elements = {{1, 0, 0},
+                           {0, 1, 0}};
+
+    rotation_z.elements = {
+        {std::cos(camera_view), -std::sin(camera_view), 0},
+        {std::sin(camera_view), std::cos(camera_view), 0},
+        {0, 0, 1}};
+
+    rotation_x.elements = {
+        {1, 0, 0},
+        {0, std::cos(camera_view), std::sin(camera_view)},
+        {0, -std::sin(camera_view), std::cos(camera_view)}};
+
+    rotation_y.elements = {
+        {std::cos(camera_view), 0, std::sin(camera_view)},
+        {0, 1, 0},
+        {-std::sin(camera_view), 0, std::cos(camera_view)}};
+
+    isometric.elements = {
+        {1, 0, 0},
+        {0, std::cos(camera_view), std::sin(camera_view)},
+        {0, -std::sin(camera_view), std::cos(camera_view)}};
+
+    basic_cube_vertices = {
+        Vector3D(-50, -50, -50),
+        Vector3D(50, -50, -50),
+        Vector3D(50, 50, -50),
+        Vector3D(-50, 50, -50),
+        Vector3D(-50, -50, 50),
+        Vector3D(50, -50, 50),
+        Vector3D(50, 50, 50),
+        Vector3D(-50, 50, 50)};
+}
+
+void SDLController::sleep(int ms)
+{
+    SDL_Delay(ms);
 }
 
 SDL_Texture *SDLController::load_image(const char *file)
@@ -50,7 +103,7 @@ SDL_Texture *SDLController::load_image(const char *file)
     return nullptr;
 }
 
-void SDLController::handle_events(float &angle, std::vector<Vector> &vertices)
+void SDLController::handle_events()
 {
     SDL_Event event;
     SDL_PumpEvents();
@@ -65,61 +118,66 @@ void SDLController::handle_events(float &angle, std::vector<Vector> &vertices)
 
     if (keysArray[SDL_SCANCODE_W])
     {
-        angle += 0.01;
+        camera_view += 0.01;
     }
 
     if (keysArray[SDL_SCANCODE_S])
     {
-        angle -= 0.01;
+        camera_view -= 0.01;
     }
 
     if (keysArray[SDL_SCANCODE_A])
     {
-        for (auto &point : vertices)
-            point.x += 3;
+        for (auto &point : basic_cube_vertices)
+            point.x += 6;
     }
 
     if (keysArray[SDL_SCANCODE_D])
     {
-        for (auto &point : vertices)
-            point.x -= 3;
+        for (auto &point : basic_cube_vertices)
+            point.x -= 6;
     }
 
     if (keysArray[SDL_SCANCODE_Q])
     {
-        for (auto &point : vertices)
-            point.y += 3;
+        for (auto &point : basic_cube_vertices)
+            point.y += 6;
     }
 
     if (keysArray[SDL_SCANCODE_E])
     {
-        for (auto &point : vertices)
-            point.y -= 3;
+        for (auto &point : basic_cube_vertices)
+            point.y -= 6;
     }
 
     if (keysArray[SDL_SCANCODE_Z])
     {
-        for (auto &point : vertices)
-            point.z += 3;
+        for (auto &point : basic_cube_vertices)
+            point.z += 6;
     }
 
     if (keysArray[SDL_SCANCODE_C])
     {
-        for (auto &point : vertices)
-            point.z -= 3;
+        for (auto &point : basic_cube_vertices)
+            point.z -= 6;
     }
 }
 
-void SDLController::connect(int i, int j, const std::vector<Vector> &vertices)
+void SDLController::connect(int i, int j, const std::vector<Vector3D> &vertices)
 {
-    Vector a = vertices[i];
-    Vector b = vertices[j];
+    Vector3D a = vertices[i];
+    Vector3D b = vertices[j];
     SDLController::render_line(a.x, a.y, b.x, b.y);
 }
 
 void SDLController::set_color(const int &r, const int &g, const int &b, const int &a)
 {
     SDL_SetRenderDrawColor(renderer, r, g, b, a);
+}
+
+void SDLController::set_camera_view_angle(float new_angle)
+{
+    camera_view = new_angle;
 }
 
 void SDLController::render(SDL_Texture *texture, SDL_Rect *source, SDL_Rect *destination, const SDL_RendererFlip &flip)
@@ -145,7 +203,7 @@ void SDLController::render_rectangle(const float &x, const float &y, const int &
     SDL_RenderFillRect(renderer, &rectangle);
 }
 
-void SDLController::render_shape(const std::vector<Vector> vertices)
+void SDLController::render_shape(const std::vector<Vector3D> vertices)
 {
     const auto num_vertices = vertices.size();
     for (auto i = 0; i < num_vertices / 2; i++)
@@ -181,6 +239,29 @@ void SDLController::clear_screen(int r, int g, int b)
 void SDLController::update_screen()
 {
     SDL_RenderPresent(renderer);
+}
+
+void SDLController::update_view_matrices()
+{
+    rotation_z.elements = {
+        {std::cos(camera_view), -std::sin(camera_view), 0},
+        {std::sin(camera_view), std::cos(camera_view), 0},
+        {0, 0, 1}};
+
+    rotation_x.elements = {
+        {1, 0, 0},
+        {0, std::cos(camera_view), std::sin(camera_view)},
+        {0, -std::sin(camera_view), std::cos(camera_view)}};
+
+    rotation_y.elements = {
+        {std::cos(camera_view), 0, -std::sin(camera_view)},
+        {0, 1, 0},
+        {std::sin(camera_view), 0, std::cos(camera_view)}};
+
+    isometric.elements = {
+        {1, 0, 0},
+        {0, std::cos(camera_view), std::sin(camera_view)},
+        {0, -std::sin(camera_view), std::cos(camera_view)}};
 }
 
 void SDLController::exit()
