@@ -31,7 +31,7 @@ void update_matrices(Matrix &rotation_x, Matrix &rotation_y, Matrix &rotation_z,
 
 int main()
 {
-    SDLController::create_window(800, 800);
+    SDLController::create_window(1280, 720);
     Board board;
     board.resize(8);
 
@@ -44,7 +44,7 @@ int main()
     Uint32 frameStart;
     int frameTime;
 
-    float angle = 0;
+    float angle = 45;
 
     std::vector<std::vector<Vector>> all_points;
 
@@ -104,7 +104,7 @@ int main()
         frameStart = SDL_GetTicks();
 
         SDLController::clear_screen();
-        SDLController::handle_events(points);
+        SDLController::handle_events(angle, points);
 
         SDLController::set_color(255, 0, 0);
         //for (const auto &points_vector : all_points)
@@ -121,25 +121,32 @@ int main()
             p.translate(250, 250);
             projected_points.emplace_back(p);
         }
-        SDLController::render_shape(projected_points);
+        //SDLController::render_shape(projected_points);
 
         projected_points = {};
 
-        update_matrices(rotation_x_matrix, rotation_y_matrix, rotation_z_matrix, rotation_isometric, 45);
-        for (const auto &point : points)
-        {
-            auto rotated = Matrix::dot_product(rotation_z_matrix, point);
-            //rotated = Matrix::dot_product(rotation_y_matrix, rotated);
-            rotated = Matrix::dot_product(rotation_x_matrix, rotated);
-            auto projected = Matrix::dot_product(projection_matrix, rotated);
-            auto p = projected.to_vector();
-            p.translate(250, 250);
-            projected_points.emplace_back(p);
-        }
-        SDLController::render_shape(projected_points);
-        // }
-
-        angle += 0.03;
+        update_matrices(rotation_x_matrix, rotation_y_matrix, rotation_z_matrix, rotation_isometric, angle);
+        int cube_size = 50;
+        for (auto i = 0; i < 5; ++i)
+            for (auto j = 0; j < 5; ++j)
+            {
+                {
+                    for (auto point : points)
+                    {
+                        point.x += i * cube_size * 2;
+                        point.y += j * cube_size * 2;
+                        auto rotated = Matrix::dot_product(rotation_z_matrix, point);
+                        //rotated = Matrix::dot_product(rotation_y_matrix, rotated);
+                        rotated = Matrix::dot_product(rotation_x_matrix, rotated);
+                        auto projected = Matrix::dot_product(projection_matrix, rotated);
+                        auto p = projected.to_vector();
+                        p.translate(400, 300);
+                        projected_points.emplace_back(p);
+                    }
+                    SDLController::render_shape(projected_points);
+                    projected_points = {};
+                }
+            }
 
         SDLController::update_screen();
 

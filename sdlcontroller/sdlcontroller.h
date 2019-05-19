@@ -11,7 +11,7 @@ public:
     SDLController() = delete;
     static void create_window(const int &_width, const int &_height, const bool &fullscreen = false);
     static SDL_Texture *load_image(const char *file);
-    static void handle_events(std::vector<Vector> &points);
+    static void handle_events(float &angle, std::vector<Vector>& vertices);
     static void connect(int i, int j, const std::vector<Vector> &vertices);
     static void render(SDL_Texture *texture,
                        SDL_Rect *destination,

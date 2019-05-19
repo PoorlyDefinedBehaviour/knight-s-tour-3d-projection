@@ -50,7 +50,7 @@ SDL_Texture *SDLController::load_image(const char *file)
     return nullptr;
 }
 
-void SDLController::handle_events(std::vector<Vector> &points)
+void SDLController::handle_events(float &angle, std::vector<Vector> &vertices)
 {
     SDL_Event event;
     SDL_PumpEvents();
@@ -63,43 +63,50 @@ void SDLController::handle_events(std::vector<Vector> &points)
         SDLController::exit();
     }
 
-    std::cout << points[0].x << ' ' << points[0].y << ' ' << points[0].z << '\n';
-
     if (keysArray[SDL_SCANCODE_W])
     {
-        std::cout << "working" << '\n';
-        for (auto &point : points)
-            point.x += 1;
+        angle += 0.01;
     }
 
     if (keysArray[SDL_SCANCODE_S])
     {
-        for (auto &point : points)
-            point.x -= 1;
-    }
-
-    if (keysArray[SDL_SCANCODE_D])
-    {
-        for (auto &point : points)
-            point.z += 1;
+        angle -= 0.01;
     }
 
     if (keysArray[SDL_SCANCODE_A])
     {
-        for (auto &point : points)
-            point.z -= 1;
+        for (auto &point : vertices)
+            point.x += 3;
+    }
+
+    if (keysArray[SDL_SCANCODE_D])
+    {
+        for (auto &point : vertices)
+            point.x -= 3;
     }
 
     if (keysArray[SDL_SCANCODE_Q])
     {
-        for (auto &point : points)
-            point.y += 1;
+        for (auto &point : vertices)
+            point.y += 3;
     }
 
     if (keysArray[SDL_SCANCODE_E])
     {
-        for (auto &point : points)
-            point.y -= 1;
+        for (auto &point : vertices)
+            point.y -= 3;
+    }
+
+    if (keysArray[SDL_SCANCODE_Z])
+    {
+        for (auto &point : vertices)
+            point.z += 3;
+    }
+
+    if (keysArray[SDL_SCANCODE_C])
+    {
+        for (auto &point : vertices)
+            point.z -= 3;
     }
 }
 

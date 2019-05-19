@@ -64,6 +64,7 @@ void Board::draw()
      * light blue = rgb(106, 137, 204)
      * red = rgb(198, 40, 40)
      * */
+
     for (int i = 0; i < this->size; ++i)
     {
         for (int j = 0; j < this->size; ++j)
