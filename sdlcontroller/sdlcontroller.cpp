@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <vector>
+#include <iostream>
 
 SDL_Window *SDLController::window;
 SDL_Renderer *SDLController::renderer;
@@ -49,7 +50,7 @@ SDL_Texture *SDLController::load_image(const char *file)
     return nullptr;
 }
 
-void SDLController::handle_events()
+void SDLController::handle_events(std::vector<Vector> &points)
 {
     SDL_Event event;
     SDL_PumpEvents();
@@ -61,6 +62,52 @@ void SDLController::handle_events()
     {
         SDLController::exit();
     }
+
+    std::cout << points[0].x << ' ' << points[0].y << ' ' << points[0].z << '\n';
+
+    if (keysArray[SDL_SCANCODE_W])
+    {
+        std::cout << "working" << '\n';
+        for (auto &point : points)
+            point.x += 1;
+    }
+
+    if (keysArray[SDL_SCANCODE_S])
+    {
+        for (auto &point : points)
+            point.x -= 1;
+    }
+
+    if (keysArray[SDL_SCANCODE_D])
+    {
+        for (auto &point : points)
+            point.z += 1;
+    }
+
+    if (keysArray[SDL_SCANCODE_A])
+    {
+        for (auto &point : points)
+            point.z -= 1;
+    }
+
+    if (keysArray[SDL_SCANCODE_Q])
+    {
+        for (auto &point : points)
+            point.y += 1;
+    }
+
+    if (keysArray[SDL_SCANCODE_E])
+    {
+        for (auto &point : points)
+            point.y -= 1;
+    }
+}
+
+void SDLController::connect(int i, int j, const std::vector<Vector> &vertices)
+{
+    Vector a = vertices[i];
+    Vector b = vertices[j];
+    SDLController::render_line(a.x, a.y, b.x, b.y);
 }
 
 void SDLController::set_color(const int &r, const int &g, const int &b, const int &a)
@@ -89,6 +136,17 @@ void SDLController::render_rectangle(const float &x, const float &y, const int &
     rectangle.h = height;
 
     SDL_RenderFillRect(renderer, &rectangle);
+}
+
+void SDLController::render_shape(const std::vector<Vector> vertices)
+{
+    const auto num_vertices = vertices.size();
+    for (auto i = 0; i < num_vertices / 2; i++)
+    {
+        connect(i, (i + 1) % (num_vertices / 2), vertices);
+        connect(i + (num_vertices / 2), ((i + 1) % (num_vertices / 2)) + (num_vertices / 2), vertices);
+        connect(i, i + (num_vertices / 2), vertices);
+    }
 }
 
 void SDLController::render_point(int x, int y)
