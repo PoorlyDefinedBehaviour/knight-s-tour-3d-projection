@@ -1,12 +1,15 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
 #include "sdlcontroller/sdlcontroller.h"
 #include "board/board.h"
+#include "vector/vector.h"
 
 int main()
 {
     SDLController::create_window(1280, 720);
     Board board;
     board.resize(8);
-    board.knight_tour();
 
     const int FPS = 60;
     const int frameDelay = 1000 / FPS;
@@ -14,12 +17,15 @@ int main()
     Uint32 frameStart;
     int frameTime;
 
+    board.knight_tour();
+
     while (true)
     {
         frameStart = SDL_GetTicks();
 
         SDLController::clear_screen();
         SDLController::handle_events();
+        SDLController::update_view_matrices();
 
         board.draw_2d();
         board.draw_knights_path_2d();

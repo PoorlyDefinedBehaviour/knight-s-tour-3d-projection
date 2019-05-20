@@ -109,9 +109,6 @@ void SDLController::handle_events()
     SDL_PumpEvents();
     SDL_PollEvent(&event);
 
-    const float camera_movement_speed = 0.01;
-    const float cube_movement_speed = 8.0f;
-
     Uint8 *keysArray = const_cast<Uint8 *>(SDL_GetKeyboardState(nullptr));
 
     if (event.type == SDL_QUIT || keysArray[SDL_SCANCODE_ESCAPE])
@@ -119,50 +116,50 @@ void SDLController::handle_events()
         SDLController::exit();
     }
 
-    if (keysArray[SDL_SCANCODE_R])
+    if (keysArray[SDL_SCANCODE_W])
     {
-        camera_view += camera_movement_speed;
+        camera_view += 0.01;
     }
 
-    if (keysArray[SDL_SCANCODE_T])
+    if (keysArray[SDL_SCANCODE_S])
     {
-        camera_view -= camera_movement_speed;
-    }
-
-    if (keysArray[SDL_SCANCODE_D])
-    {
-        for (auto &point : basic_cube_vertices)
-            point.x += cube_movement_speed;
+        camera_view -= 0.01;
     }
 
     if (keysArray[SDL_SCANCODE_A])
     {
         for (auto &point : basic_cube_vertices)
-            point.x -= cube_movement_speed;
+            point.x += 6;
     }
 
-    if (keysArray[SDL_SCANCODE_S])
+    if (keysArray[SDL_SCANCODE_D])
     {
         for (auto &point : basic_cube_vertices)
-            point.y += cube_movement_speed;
+            point.x -= 6;
     }
 
-    if (keysArray[SDL_SCANCODE_W])
+    if (keysArray[SDL_SCANCODE_Q])
     {
         for (auto &point : basic_cube_vertices)
-            point.y -= cube_movement_speed;
+            point.y += 6;
     }
 
-    if (keysArray[SDL_SCANCODE_X])
+    if (keysArray[SDL_SCANCODE_E])
     {
         for (auto &point : basic_cube_vertices)
-            point.z += cube_movement_speed;
+            point.y -= 6;
     }
 
     if (keysArray[SDL_SCANCODE_Z])
     {
         for (auto &point : basic_cube_vertices)
-            point.z -= cube_movement_speed;
+            point.z += 6;
+    }
+
+    if (keysArray[SDL_SCANCODE_C])
+    {
+        for (auto &point : basic_cube_vertices)
+            point.z -= 6;
     }
 }
 
@@ -241,7 +238,6 @@ void SDLController::clear_screen(int r, int g, int b)
 
 void SDLController::update_screen()
 {
-    update_view_matrices();
     SDL_RenderPresent(renderer);
 }
 
