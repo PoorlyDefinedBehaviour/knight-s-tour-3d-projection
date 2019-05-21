@@ -10,10 +10,11 @@ SDL_Renderer *SDLController::renderer;
 int SDLController::WINDOW_WIDTH;
 int SDLController::WINDOW_HEIGHT;
 Matrix SDLController::projection;
+Matrix SDLController::perspective;
+Matrix SDLController::isometric;
 Matrix SDLController::rotation_z;
 Matrix SDLController::rotation_x;
 Matrix SDLController::rotation_y;
-Matrix SDLController::isometric;
 float SDLController::camera_view;
 std::vector<Vector3D> SDLController::basic_cube_vertices;
 
@@ -45,12 +46,24 @@ void SDLController::create_window(const int &_width, const int &_height, const b
     camera_view = 0;
 
     projection.resize(2, 3);
+    perspective.resize(3, 3);
+    isometric.resize(3, 3);
     rotation_z.resize(3, 3);
     rotation_x.resize(3, 3);
     rotation_y.resize(3, 3);
 
     projection.elements = {{1, 0, 0},
                            {0, 1, 0}};
+
+    perspective.elements = {
+        {10, 0, 0},
+        {0, 4.0 / 3.0, 0},
+        {0, 0, 1}};
+
+    isometric.elements = {
+        {1, 0, 0},
+        {0, std::cos(camera_view), std::sin(camera_view)},
+        {0, -std::sin(camera_view), std::cos(camera_view)}};
 
     rotation_z.elements = {
         {std::cos(camera_view), -std::sin(camera_view), 0},
@@ -66,11 +79,6 @@ void SDLController::create_window(const int &_width, const int &_height, const b
         {std::cos(camera_view), 0, std::sin(camera_view)},
         {0, 1, 0},
         {-std::sin(camera_view), 0, std::cos(camera_view)}};
-
-    isometric.elements = {
-        {1, 0, 0},
-        {0, std::cos(camera_view), std::sin(camera_view)},
-        {0, -std::sin(camera_view), std::cos(camera_view)}};
 
     basic_cube_vertices = {
         Vector3D(-50, -50, -50),
@@ -109,8 +117,8 @@ void SDLController::handle_events()
     SDL_PumpEvents();
     SDL_PollEvent(&event);
 
-    const float camera_movement_speed = 0.01;
-    const float cube_movement_speed = 8.0f;
+    const float rotation_speed = 0.01;
+    const float cube_movement_speed = 10.0f;
 
     Uint8 *keysArray = const_cast<Uint8 *>(SDL_GetKeyboardState(nullptr));
 
@@ -121,12 +129,32 @@ void SDLController::handle_events()
 
     if (keysArray[SDL_SCANCODE_R])
     {
-        camera_view += camera_movement_speed;
+        rotate(rotation_speed, 0, 0);
     }
 
     if (keysArray[SDL_SCANCODE_T])
     {
-        camera_view -= camera_movement_speed;
+        rotate(-rotation_speed, 0, 0);
+    }
+
+    if (keysArray[SDL_SCANCODE_F])
+    {
+        rotate(0, rotation_speed, 0);
+    }
+
+    if (keysArray[SDL_SCANCODE_G])
+    {
+        rotate(0, -rotation_speed, 0);
+    }
+
+    if (keysArray[SDL_SCANCODE_V])
+    {
+        rotate(0, 0, rotation_speed);
+    }
+
+    if (keysArray[SDL_SCANCODE_B])
+    {
+        rotate(0, 0, -rotation_speed);
     }
 
     if (keysArray[SDL_SCANCODE_D])
@@ -164,6 +192,32 @@ void SDLController::handle_events()
         for (auto &point : basic_cube_vertices)
             point.z -= cube_movement_speed;
     }
+}
+
+void SDLController::rotate(float x, float y, float z)
+{
+    static float x_angle = 0;
+    static float y_angle = 0;
+    static float z_angle = 0;
+
+    x_angle += x;
+    y_angle += y;
+    z_angle += z;
+
+    rotation_x.elements = {
+        {1, 0, 0},
+        {0, std::cos(x_angle), std::sin(x_angle)},
+        {0, -std::sin(x_angle), std::cos(x_angle)}};
+
+    rotation_z.elements = {
+        {std::cos(z_angle), -std::sin(z_angle), 0},
+        {std::sin(z_angle), std::cos(z_angle), 0},
+        {0, 0, 1}};
+
+    rotation_y.elements = {
+        {std::cos(y_angle), 0, -std::sin(y_angle)},
+        {0, 1, 0},
+        {std::sin(y_angle), 0, std::cos(y_angle)}};
 }
 
 void SDLController::connect(int i, int j, const std::vector<Vector3D> &vertices)
@@ -241,31 +295,7 @@ void SDLController::clear_screen(int r, int g, int b)
 
 void SDLController::update_screen()
 {
-    update_view_matrices();
     SDL_RenderPresent(renderer);
-}
-
-void SDLController::update_view_matrices()
-{
-    rotation_z.elements = {
-        {std::cos(camera_view), -std::sin(camera_view), 0},
-        {std::sin(camera_view), std::cos(camera_view), 0},
-        {0, 0, 1}};
-
-    rotation_x.elements = {
-        {1, 0, 0},
-        {0, std::cos(camera_view), std::sin(camera_view)},
-        {0, -std::sin(camera_view), std::cos(camera_view)}};
-
-    rotation_y.elements = {
-        {std::cos(camera_view), 0, -std::sin(camera_view)},
-        {0, 1, 0},
-        {std::sin(camera_view), 0, std::cos(camera_view)}};
-
-    isometric.elements = {
-        {1, 0, 0},
-        {0, std::cos(camera_view), std::sin(camera_view)},
-        {0, -std::sin(camera_view), std::cos(camera_view)}};
 }
 
 void SDLController::exit()

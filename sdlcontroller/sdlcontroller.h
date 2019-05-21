@@ -28,17 +28,18 @@ public:
     static void set_camera_view_angle(float new_angle);
     static void clear_screen(int r = 0, int g = 0, int b = 0);
     static void update_screen();
-    static void update_view_matrices();
+    static void rotate(float x, float y, float z);
     static void exit();
 
     static int WINDOW_WIDTH;
     static int WINDOW_HEIGHT;
     static float camera_view;
     static Matrix projection;
+    static Matrix perspective;
+    static Matrix isometric;
     static Matrix rotation_z;
     static Matrix rotation_x;
     static Matrix rotation_y;
-    static Matrix isometric;
     static std::vector<Vector3D> basic_cube_vertices;
 
 private:
