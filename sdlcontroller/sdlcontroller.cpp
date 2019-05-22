@@ -10,12 +10,14 @@ SDL_Renderer *SDLController::renderer;
 SDL_Event SDLController::event_handler;
 int SDLController::WINDOW_WIDTH;
 int SDLController::WINDOW_HEIGHT;
-Matrix SDLController::projection;
-Matrix SDLController::perspective;
-Matrix SDLController::isometric;
-Matrix SDLController::rotation_z;
-Matrix SDLController::rotation_x;
-Matrix SDLController::rotation_y;
+int SDLController::WINDOW_HALF_WIDTH;
+int SDLController::WINDOW_HALF_HEIGHT;
+Matrix<float> SDLController::projection;
+Matrix<float> SDLController::perspective;
+Matrix<float> SDLController::isometric;
+Matrix<float> SDLController::rotation_z;
+Matrix<float> SDLController::rotation_x;
+Matrix<float> SDLController::rotation_y;
 std::vector<Vector3D> SDLController::basic_cube_vertices;
 
 void SDLController::create_window(const int &_width, const int &_height, const bool &fullscreen)
@@ -24,6 +26,8 @@ void SDLController::create_window(const int &_width, const int &_height, const b
 
     WINDOW_WIDTH = _width;
     WINDOW_HEIGHT = _height;
+    WINDOW_HALF_WIDTH = WINDOW_WIDTH / 2;
+    WINDOW_HALF_HEIGHT = WINDOW_HEIGHT / 2;
 
     int flags = SDL_WINDOW_OPENGL;
     if (fullscreen)
@@ -60,23 +64,23 @@ void SDLController::create_window(const int &_width, const int &_height, const b
 
     isometric.elements = {
         {1, 0, 0},
-        {0, std::cos(0), std::sin(0)},
-        {0, -std::sin(0), std::cos(0)}};
+        {0, static_cast<float>(std::cos(0)), static_cast<float>(std::sin(0))},
+        {0, static_cast<float>(-std::sin(0)), static_cast<float>(std::cos(0))}};
 
     rotation_z.elements = {
-        {std::cos(0), -std::sin(0), 0},
-        {std::sin(0), std::cos(0), 0},
+        {static_cast<float>(std::cos(0)), static_cast<float>(-std::sin(0)), 0},
+        {static_cast<float>(std::sin(0)), static_cast<float>(std::cos(0)), 0},
         {0, 0, 1}};
 
     rotation_x.elements = {
         {1, 0, 0},
-        {0, std::cos(0), std::sin(0)},
-        {0, -std::sin(0), std::cos(0)}};
+        {0, static_cast<float>(std::cos(0)), static_cast<float>(std::sin(0))},
+        {0, static_cast<float>(-std::sin(0)), static_cast<float>(std::cos(0))}};
 
     rotation_y.elements = {
-        {std::cos(0), 0, std::sin(0)},
+        {static_cast<float>(std::cos(0)), 0, static_cast<float>(std::sin(0))},
         {0, 1, 0},
-        {-std::sin(0), 0, std::cos(0)}};
+        {static_cast<float>(-std::sin(0)), 0, static_cast<float>(std::cos(0))}};
 
     basic_cube_vertices = {
         Vector3D(-50, -50, -50),
@@ -92,21 +96,6 @@ void SDLController::create_window(const int &_width, const int &_height, const b
 void SDLController::sleep(int ms)
 {
     SDL_Delay(ms);
-}
-
-SDL_Texture *SDLController::load_image(const char *file)
-{
-    /*
-    SDL_Surface* tempImage = IMG_Load(file);
-    SDL_Surface* optimizedImage = SDL_ConvertSurface(tempImage, tempImage->format, 0);
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, optimizedImage);
-
-    SDL_FreeSurface(tempImage);
-    SDL_FreeSurface(optimizedImage);
-
-    return texture;
-    */
-    return nullptr;
 }
 
 void SDLController::handle_events()

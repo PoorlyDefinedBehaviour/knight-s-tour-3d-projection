@@ -1,4 +1,13 @@
 #pragma once
+#include <functional>
+
+enum class ButtonType
+{
+    START,
+    TOGGLE,
+    INCREASE,
+    DECREASE
+};
 
 class Button
 {
@@ -7,10 +16,12 @@ private:
     float y;
     float width;
     float height;
-    bool increaseKey;
+    ButtonType type;
+    std::function<void(void)> click_handler;
 
 public:
-    Button(float x, float y, float width, float height, bool increaseKey);
+    Button(float x, float y, float width, float height, ButtonType type);
     void draw();
-    bool is_clicked();
+    void handle_events();
+    void on_click(const std::function<void(void)> &click_handler);
 };
