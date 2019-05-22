@@ -13,18 +13,20 @@ public:
   std::vector<std::vector<double>> elements;
 
   Matrix(int _rows = 0, int _columns = 0);
+  Matrix operator*(const Matrix &other);
+  Matrix operator*(const Vector3D &other);
+  Matrix operator*(int number);
+  Matrix operator+(const Matrix &other);
+  Matrix operator+(int number);
+  Matrix operator-(const Matrix &other);
+  Matrix operator-(int number);
+  Matrix element_wise_add(const Matrix &other);
+  Matrix element_wise_subtract(const Matrix &other);
+  Matrix element_wise_multiply(const Matrix &other);
+  Matrix element_wise_divide(const Matrix &other);
 
   void print();
   void resize(int rows, int columns);
-  static Matrix dot_product(const Matrix &a, const Matrix &b);
-  static Matrix dot_product(const Matrix &a, const Vector3D &b);
-  Matrix add_scalar(int number);
-  Matrix subtract_scalar(int number);
-  Matrix multiply_scalar(int number);
-  Matrix element_wise_multiply(const Matrix &other);
-  Matrix subtract(const Matrix &other);
-  Matrix dot_product(const Matrix &other);
-  Matrix dot_product(const Vector3D &other);
   Matrix transpose();
   Vector3D to_vector();
   std::vector<double> to_array();

@@ -7,6 +7,7 @@
 
 SDL_Window *SDLController::window;
 SDL_Renderer *SDLController::renderer;
+SDL_Event SDLController::event_handler;
 int SDLController::WINDOW_WIDTH;
 int SDLController::WINDOW_HEIGHT;
 Matrix SDLController::projection;
@@ -15,7 +16,6 @@ Matrix SDLController::isometric;
 Matrix SDLController::rotation_z;
 Matrix SDLController::rotation_x;
 Matrix SDLController::rotation_y;
-float SDLController::camera_view;
 std::vector<Vector3D> SDLController::basic_cube_vertices;
 
 void SDLController::create_window(const int &_width, const int &_height, const bool &fullscreen)
@@ -31,7 +31,7 @@ void SDLController::create_window(const int &_width, const int &_height, const b
         flags = SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN;
     }
 
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+    SDL_Init(SDL_INIT_EVERYTHING);
 
     window = SDL_CreateWindow("Knight's Tour",
                               SDL_WINDOWPOS_CENTERED,
@@ -42,8 +42,6 @@ void SDLController::create_window(const int &_width, const int &_height, const b
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
     SDL_SetRenderDrawColor(renderer, 0xff, 0xb4, 0xff, 0xff);
-
-    camera_view = 0;
 
     projection.resize(2, 3);
     perspective.resize(3, 3);
@@ -62,23 +60,23 @@ void SDLController::create_window(const int &_width, const int &_height, const b
 
     isometric.elements = {
         {1, 0, 0},
-        {0, std::cos(camera_view), std::sin(camera_view)},
-        {0, -std::sin(camera_view), std::cos(camera_view)}};
+        {0, std::cos(0), std::sin(0)},
+        {0, -std::sin(0), std::cos(0)}};
 
     rotation_z.elements = {
-        {std::cos(camera_view), -std::sin(camera_view), 0},
-        {std::sin(camera_view), std::cos(camera_view), 0},
+        {std::cos(0), -std::sin(0), 0},
+        {std::sin(0), std::cos(0), 0},
         {0, 0, 1}};
 
     rotation_x.elements = {
         {1, 0, 0},
-        {0, std::cos(camera_view), std::sin(camera_view)},
-        {0, -std::sin(camera_view), std::cos(camera_view)}};
+        {0, std::cos(0), std::sin(0)},
+        {0, -std::sin(0), std::cos(0)}};
 
     rotation_y.elements = {
-        {std::cos(camera_view), 0, std::sin(camera_view)},
+        {std::cos(0), 0, std::sin(0)},
         {0, 1, 0},
-        {-std::sin(camera_view), 0, std::cos(camera_view)}};
+        {-std::sin(0), 0, std::cos(0)}};
 
     basic_cube_vertices = {
         Vector3D(-50, -50, -50),
@@ -113,16 +111,15 @@ SDL_Texture *SDLController::load_image(const char *file)
 
 void SDLController::handle_events()
 {
-    SDL_Event event;
     SDL_PumpEvents();
-    SDL_PollEvent(&event);
+    SDL_PollEvent(&event_handler);
 
     const float rotation_speed = 0.01;
     const float cube_movement_speed = 10.0f;
 
     Uint8 *keysArray = const_cast<Uint8 *>(SDL_GetKeyboardState(nullptr));
 
-    if (event.type == SDL_QUIT || keysArray[SDL_SCANCODE_ESCAPE])
+    if (event_handler.type == SDL_QUIT || keysArray[SDL_SCANCODE_ESCAPE])
     {
         SDLController::exit();
     }
@@ -232,9 +229,13 @@ void SDLController::set_color(const int &r, const int &g, const int &b, const in
     SDL_SetRenderDrawColor(renderer, r, g, b, a);
 }
 
-void SDLController::set_camera_view_angle(float new_angle)
+std::vector<int> SDLController::get_mouse_position()
 {
-    camera_view = new_angle;
+    int x_pos = NULL;
+    int y_pos = NULL;
+
+    SDL_GetMouseState(&x_pos, &y_pos);
+    return {x_pos, y_pos};
 }
 
 void SDLController::render(SDL_Texture *texture, SDL_Rect *source, SDL_Rect *destination, const SDL_RendererFlip &flip)

@@ -5,6 +5,7 @@
 #include "../vector/vector.h"
 #include "../matrix/matrix.h"
 #include <vector>
+#include <tuple>
 
 class SDLController
 {
@@ -25,7 +26,7 @@ public:
     static void render_line(int x1, int y1, int x2, int y2);
     static void render_lines(SDL_Point points[], int count);
     static void set_color(const int &r, const int &g, const int &b, const int &a = 0);
-    static void set_camera_view_angle(float new_angle);
+    static std::vector<int> get_mouse_position();
     static void clear_screen(int r = 0, int g = 0, int b = 0);
     static void update_screen();
     static void rotate(float x, float y, float z);
@@ -33,7 +34,6 @@ public:
 
     static int WINDOW_WIDTH;
     static int WINDOW_HEIGHT;
-    static float camera_view;
     static Matrix projection;
     static Matrix perspective;
     static Matrix isometric;
@@ -41,6 +41,7 @@ public:
     static Matrix rotation_x;
     static Matrix rotation_y;
     static std::vector<Vector3D> basic_cube_vertices;
+    static SDL_Event event_handler;
 
 private:
     static SDL_Window *window;

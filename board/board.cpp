@@ -10,21 +10,16 @@ Board::Board()
 
 void Board::resize(int size)
 {
+    if (size < 3 || size > 8 || this->size == size)
+        return;
+
     this->grid.resize(size, size);
-
+    this->solution.fill([&]() { return EMPTY; });
+    this->grid.fill([&]() { return EMPTY; });
+    this->path.clear();
     this->size = size;
-    this->reset();
-}
-
-void Board::reset()
-{
-    for (int i = 0; i < this->size; ++i)
-    {
-        for (int j = 0; j < this->size; ++j)
-        {
-            this->grid.elements[i][j] = EMPTY;
-        }
-    }
+    current_index_for_2d_path = 0;
+    current_index_for_3d_path = 0;
 }
 
 bool Board::is_visited(int row, int column) const noexcept
@@ -75,10 +70,10 @@ void Board::draw_3d()
             {
                 point.x += i * cube_size;
                 point.y += j * cube_size;
-                auto rotated = Matrix::dot_product(SDLController::rotation_z, point);
-                rotated = Matrix::dot_product(SDLController::rotation_y, point);
-                rotated = Matrix::dot_product(SDLController::rotation_x, rotated);
-                auto projected = Matrix::dot_product(SDLController::projection, rotated);
+                auto rotated = SDLController::rotation_z * point;
+                rotated = SDLController::rotation_y * rotated;
+                rotated = SDLController::rotation_x * rotated;
+                auto projected = SDLController::projection * rotated;
                 auto p = projected.to_vector();
                 p.translate(400, 300);
                 p.multiply(0.5);
@@ -94,31 +89,23 @@ void Board::draw_3d()
 void Board::draw_knights_path_2d()
 {
     SDL_Point points[64];
+    static int time_passed = 0;
 
     for (size_t i = 0; i < this->path.size(); ++i)
     {
         points[i] = {(SDLController::WINDOW_WIDTH / 2 + this->path[i].row * this->cell_size) + cell_size / 2, 100 + (this->path[i].column * cell_size) + cell_size / 2};
     }
 
-    static int current_index = 0;
-    static int time_passed = 0;
-
-    ++time_passed;
-
-    if (time_passed >= this->knight_path_drawing_delay)
+    if (++time_passed >= this->knight_path_drawing_delay)
     {
         time_passed = 0;
-        ++current_index;
 
-        if (current_index == this->path.size())
-        {
-            current_index = 0;
-        }
+        if (++current_index_for_2d_path >= this->path.size())
+            current_index_for_2d_path = 0;
     }
 
-    for (auto i = 0; i < current_index; ++i)
+    for (auto i = 0; i < current_index_for_2d_path; ++i)
     {
-
         SDLController::set_color(198, 40, 40);
 
         auto current_cell = this->path[i];
@@ -130,7 +117,7 @@ void Board::draw_knights_path_2d()
     }
 
     SDLController::set_color(46, 125, 50);
-    SDLController::render_lines(points, current_index);
+    SDLController::render_lines(points, current_index_for_2d_path);
 }
 
 void Board::draw_knights_path_3d()
@@ -138,29 +125,27 @@ void Board::draw_knights_path_3d()
     std::vector<Vector3D> projected_points;
     const int cube_size = 100;
     static int time_passed = 0;
-    static int current_index = 0;
 
     if (++time_passed >= this->knight_path_drawing_delay)
     {
         time_passed = 0;
 
-        ++current_index;
-        if (current_index >= this->path.size())
-            current_index = 0;
+        if (++current_index_for_3d_path >= this->path.size())
+            current_index_for_3d_path = 0;
     }
 
     SDLController::set_color(255, 0, 0);
-    for (auto i = 0; i < current_index; ++i)
+    for (auto i = 0; i < current_index_for_3d_path; ++i)
     {
         for (auto point : SDLController::basic_cube_vertices)
         {
             point.x += this->path[i].row * cube_size;
             point.y += this->path[i].column * cube_size;
             point.z += 400;
-            auto rotated = Matrix::dot_product(SDLController::rotation_z, point);
-            rotated = Matrix::dot_product(SDLController::rotation_y, point);
-            rotated = Matrix::dot_product(SDLController::rotation_x, rotated);
-            auto projected = Matrix::dot_product(SDLController::projection, rotated);
+            auto rotated = SDLController::rotation_z * point;
+            rotated = SDLController::rotation_y * rotated;
+            rotated = SDLController::rotation_x * rotated;
+            auto projected = SDLController::projection * rotated;
             auto p = projected.to_vector();
             p.translate(400, 300);
             p.multiply(0.5);
@@ -172,7 +157,7 @@ void Board::draw_knights_path_3d()
     }
 }
 
-void Board::knight_tour()
+void Board::find_knights_path()
 {
     this->solution.resize(this->size, this->size);
     this->solution.fill([&]() -> int { return EMPTY; });
@@ -240,4 +225,9 @@ bool Board::is_move_valid(int row, int column)
            row < this->size &&
            column < this->size &&
            this->solution.elements[row][column] == EMPTY;
+}
+
+int Board::get_size() const noexcept
+{
+    return this->size;
 }
