@@ -8,6 +8,25 @@
 template <typename T>
 class Matrix
 {
+private:
+  void assert_same_size(const Matrix &one, const Matrix &other)
+  {
+    if (one.rows != other.rows || one.columns != other.columns)
+      throw std::length_error("Matrix A size must match Matrix B size");
+  }
+
+  void assert_dot_product_is_possible(const Matrix &one, const Matrix &other)
+  {
+    if (one.columns != other.rows)
+      throw std::length_error("Matrix A columns must match Matrix B rows");
+  }
+
+  void assert_index_is_valid(size_t index)
+  {
+    if (index < 0 || index > this->rows - 1)
+      throw std::out_of_range("Invalid index");
+  }
+
 public:
   int rows;
   int columns;
@@ -23,14 +42,15 @@ public:
 
   std::vector<T> &operator[](size_t index)
   {
-    if (index < 0 || index > this->rows - 1)
-      throw std::out_of_range("Invalid index");
+    assert_index_is_valid(index);
 
     return this->elements[index];
   }
 
   Matrix operator*(const Matrix &other)
   {
+    assert_dot_product_is_possible(*this, other);
+
     Matrix<T> result(rows, other.columns);
 
     for (auto i = 0; i < rows; ++i)
@@ -70,16 +90,6 @@ public:
 
     return result;
   }
-  Matrix<T> operator+(const Matrix &other)
-  {
-    Matrix<T> result(rows, columns);
-
-    for (auto i = 0; i < rows; ++i)
-      for (auto j = 0; j < columns; ++j)
-        result[i][j] = elements[i][j] + other[i][j];
-
-    return result;
-  }
 
   Matrix<T> operator+(int number)
   {
@@ -88,17 +98,6 @@ public:
     for (auto i = 0; i < rows; ++i)
       for (auto j = 0; j < columns; ++j)
         result[i][j] = elements[i][j] + number;
-
-    return result;
-  }
-
-  Matrix<T> operator-(const Matrix &other)
-  {
-    Matrix<T> result(rows, columns);
-
-    for (auto i = 0; i < rows; ++i)
-      for (auto j = 0; j < columns; ++j)
-        result[i][j] = elements[i][j] - other[i][j];
 
     return result;
   }
@@ -116,8 +115,7 @@ public:
 
   Matrix<T> element_wise_add(const Matrix &other)
   {
-    if (this->rows != other.rows || this->columns || other.columns)
-      throw std::length_error("Matrix B must be the same size as Matrix B");
+    assert_same_size(*this, other);
 
     Matrix<T> result(this->rows, this->columns);
 
@@ -130,8 +128,7 @@ public:
 
   Matrix<T> element_wise_subtract(const Matrix &other)
   {
-    if (this->rows != other.rows || this->columns || other.columns)
-      throw std::length_error("Matrix B must be the same size as Matrix B");
+    assert_same_size(*this, other);
 
     Matrix<T> result(this->rows, this->columns);
 
@@ -144,6 +141,8 @@ public:
 
   Matrix<T> element_wise_multiply(const Matrix &other)
   {
+    assert_same_size(*this, other);
+
     Matrix<T> result(this->rows, this->columns);
 
     for (auto i = 0; i < this->rows; ++i)
@@ -155,6 +154,8 @@ public:
 
   Matrix<T> element_wise_divide(const Matrix &other)
   {
+    assert_same_size(*this, other);
+
     Matrix<T> result(this->rows, this->columns);
 
     for (auto i = 0; i < this->rows; ++i)
@@ -162,20 +163,6 @@ public:
         result[i][i] = this->elements[i][j] / other[i][j];
 
     return result;
-  }
-
-  void print()
-  {
-    std::cout << this->rows << " x " << this->columns << '\n';
-    for (auto i = 0; i < this->rows; ++i)
-    {
-      for (auto j = 0; j < this->columns; ++j)
-      {
-        std::cout << this->elements[i][j] << ' ';
-      }
-      std::cout << '\n';
-    }
-    std::cout << '\n';
   }
 
   void resize(int rows, int columns)
@@ -188,7 +175,7 @@ public:
 
   Matrix<T> transpose()
   {
-    Matrix<T> result(this->rows, this->columns);
+    Matrix<T> result(this->columns, this->rows);
 
     for (auto i = 0; i < result.rows; i++)
     {
@@ -239,5 +226,19 @@ public:
     for (int i = 0; i < this->rows; ++i)
       for (int j = 0; j < this->columns; ++j)
         this->elements[i][j] = func();
+  }
+
+  void print()
+  {
+    std::cout << this->rows << " x " << this->columns << '\n';
+    for (auto i = 0; i < this->rows; ++i)
+    {
+      for (auto j = 0; j < this->columns; ++j)
+      {
+        std::cout << this->elements[i][j] << ' ';
+      }
+      std::cout << '\n';
+    }
+    std::cout << '\n';
   }
 };

@@ -16,9 +16,9 @@ void Board::handle_events()
     SDL_FlushEvents(SDL_MOUSEMOTION, SDL_MOUSEWHEEL);
     SDL_PumpEvents();
 
-    std::vector<int> position = this->get_board_pos_regarding_mouse();
-    const int &row = position.front();
-    const int &column = position.back();
+    auto position = this->get_board_pos_regarding_mouse();
+    const int &row = position.first;
+    const int &column = position.second;
 
     if (row != -1 && column != -1)
     {
@@ -218,13 +218,13 @@ void Board::draw_knights_path_3d()
 
 void Board::draw_mouse_position()
 {
-  std::vector<int> position = this->get_board_pos_regarding_mouse();
+  auto position = this->get_board_pos_regarding_mouse();
 
-  if (position.front() == -1 || position.back() == -1)
+  if (position.first == -1 || position.second == -1)
     return;
 
-  const int &row = position.front();
-  const int &column = position.back();
+  const int &row = position.first;
+  const int &column = position.second;
 
   SDLController::render_rectangle(SDLController::WINDOW_HALF_WIDTH + row * this->cell_size,
                                   100 + column * this->cell_size,
@@ -265,8 +265,8 @@ bool Board::find_path(int step_count, int row, int column)
 
   for (const auto &move : this->moves)
   {
-    const int next_row = row + std::get<0>(move);
-    const int next_column = column + std::get<1>(move);
+    const int next_row = row + move.first;
+    const int next_column = column + move.second;
 
     if (is_move_valid(next_row, next_column))
     {
@@ -300,11 +300,11 @@ int Board::get_size() const noexcept
   return this->size;
 }
 
-std::vector<int> Board::get_board_pos_regarding_mouse()
+std::pair<int, int> Board::get_board_pos_regarding_mouse()
 {
-  std::vector<int> mouse_pos = SDLController::get_mouse_position();
-  const int &x = mouse_pos.front();
-  const int &y = mouse_pos.back();
+  auto mouse_pos = SDLController::get_mouse_position();
+  const int &x = mouse_pos.first;
+  const int &y = mouse_pos.second;
 
   if (x < SDLController::WINDOW_HALF_WIDTH || y < 100 ||
       x > (SDLController::WINDOW_HALF_WIDTH + this->size * this->cell_size) || y > (100 + this->size * this->cell_size))
@@ -315,5 +315,5 @@ std::vector<int> Board::get_board_pos_regarding_mouse()
   const int row = (x - SDLController::WINDOW_HALF_WIDTH) / this->cell_size;
   const int column = (y - 100) / this->cell_size;
 
-  return {row, column};
+  return std::make_pair(row, column);
 }

@@ -30,7 +30,7 @@ public:
   static void start_frame();
   static void end_frame();
   static void rotate(float x, float y, float z);
-  static std::vector<int> get_mouse_position();
+  static std::pair<int, int> get_mouse_position();
   static void exit();
 
   static int WINDOW_WIDTH;

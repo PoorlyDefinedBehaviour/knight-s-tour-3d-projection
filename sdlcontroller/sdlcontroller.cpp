@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <vector>
 #include <cmath>
-#include <iostream>
 
 SDL_Window *SDLController::window;
 SDL_Renderer *SDLController::renderer;
@@ -222,13 +221,13 @@ void SDLController::set_color(const int &r, const int &g, const int &b, const in
   SDL_SetRenderDrawColor(renderer, r, g, b, a);
 }
 
-std::vector<int> SDLController::get_mouse_position()
+std::pair<int, int> SDLController::get_mouse_position()
 {
   int x_pos = NULL;
   int y_pos = NULL;
 
   SDL_GetMouseState(&x_pos, &y_pos);
-  return {x_pos, y_pos};
+  return std::make_pair(x_pos, y_pos);
 }
 
 void SDLController::render(SDL_Texture *texture, SDL_Rect *source, SDL_Rect *destination, const SDL_RendererFlip &flip)

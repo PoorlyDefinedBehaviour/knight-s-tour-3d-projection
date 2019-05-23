@@ -56,7 +56,7 @@ public:
   int get_minimum_tour_steps() const noexcept;
   void find_knights_path();
   int get_size() const noexcept;
-  std::vector<int> get_board_pos_regarding_mouse();
+  std::pair<int, int> get_board_pos_regarding_mouse();
   void draw_2d();
   void draw_3d();
   void draw_knights_path_3d();
