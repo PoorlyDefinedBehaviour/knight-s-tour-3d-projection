@@ -5,11 +5,6 @@
 int main()
 {
   SDLController::create_window(1280, 720);
-  const int FPS = 60;
-  const int frameDelay = 1000 / FPS;
-
-  Uint32 frameStart;
-  int frameTime;
 
   Board board;
 
@@ -40,7 +35,6 @@ int main()
 
   while (true)
   {
-    SDL_PumpEvents();
     SDLController::start_frame();
     SDLController::clear_screen();
     SDLController::handle_events();

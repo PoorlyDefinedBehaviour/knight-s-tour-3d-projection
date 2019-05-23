@@ -294,6 +294,7 @@ void SDLController::update_screen()
 
 void SDLController::start_frame()
 {
+  SDL_PumpEvents();
   frameStart = SDL_GetTicks();
 }
 
