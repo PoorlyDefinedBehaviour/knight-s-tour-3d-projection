@@ -57,43 +57,43 @@ void SDLController::create_window(const int &_width, const int &_height, const b
   rotation_x.resize(3, 3);
   rotation_y.resize(3, 3);
 
-  projection.elements = {{1, 0, 0},
-                         {0, 1, 0}};
+  projection.elements = {{1.0f, 0.0f, 0.0f},
+                         {0.0f, 1, 0.0f}};
 
   perspective.elements = {
-      {10, 0, 0},
-      {0, 4.0 / 3.0, 0},
-      {0, 0, 1}};
+      {1.0f, 0.0f, 0.0f},
+      {0.0f, 4.0f / 3.0f, 0.0f},
+      {0.0f, 0.0f, 1.0f}};
 
   isometric.elements = {
-      {1, 0, 0},
-      {0, static_cast<float>(std::cos(0)), static_cast<float>(std::sin(0))},
-      {0, static_cast<float>(-std::sin(0)), static_cast<float>(std::cos(0))}};
+      {1.0f, 0.0f, 0.0f, 0.0f},
+      {0.0f, std::cos(0.0f), std::sin(0.0f)},
+      {0.0f, -std::sin(0.0f), std::cos(0.0f)}};
 
   rotation_z.elements = {
-      {static_cast<float>(std::cos(0)), static_cast<float>(-std::sin(0)), 0},
-      {static_cast<float>(std::sin(0)), static_cast<float>(std::cos(0)), 0},
-      {0, 0, 1}};
+      {std::cos(0.0f), -std::sin(0.0f), 0.0f},
+      {std::sin(0.0f), std::cos(0.0f), 0.0f},
+      {0.0f, 0.0f, 1.0f, 0.0f}};
 
   rotation_x.elements = {
-      {1, 0, 0},
-      {0, static_cast<float>(std::cos(0)), static_cast<float>(std::sin(0))},
-      {0, static_cast<float>(-std::sin(0)), static_cast<float>(std::cos(0))}};
+      {1.0f, 0.0f, 0.0f},
+      {0.0f, std::cos(0.0f), std::sin(0.0f)},
+      {0.0f, -std::sin(0.0f), std::cos(0.0f)}};
 
   rotation_y.elements = {
-      {static_cast<float>(std::cos(0)), 0, static_cast<float>(std::sin(0))},
-      {0, 1, 0},
-      {static_cast<float>(-std::sin(0)), 0, static_cast<float>(std::cos(0))}};
+      {std::cos(0.0f), 0.0f, std::sin(0.0f)},
+      {0.0f, 1.0f, 0.0f},
+      {-std::sin(0.0f), 0.0f, std::cos(0.0f)}};
 
   basic_cube_vertices = {
-      Vector3D(-50, -50, -50),
-      Vector3D(50, -50, -50),
-      Vector3D(50, 50, -50),
-      Vector3D(-50, 50, -50),
-      Vector3D(-50, -50, 50),
-      Vector3D(50, -50, 50),
-      Vector3D(50, 50, 50),
-      Vector3D(-50, 50, 50)};
+      Vector3D(-50.0f, -50.0f, -50.0f),
+      Vector3D(50.0f, -50.0f, -50.0f),
+      Vector3D(50.0f, 50.0f, -50.0f),
+      Vector3D(-50.0f, 50.0f, -50.0f),
+      Vector3D(-50.0f, -50.0f, 50.0f),
+      Vector3D(50.0f, -50.0f, 50.0f),
+      Vector3D(50.0f, 50.0f, 50.0f),
+      Vector3D(-50.0f, 50.0f, 50.0f)};
 }
 
 void SDLController::sleep(int ms)
@@ -106,7 +106,7 @@ void SDLController::handle_events()
   SDL_PumpEvents();
   SDL_PollEvent(&event_handler);
 
-  const float rotation_speed = 0.01;
+  const float rotation_speed = 0.01f;
   const float cube_movement_speed = 10.0f;
 
   Uint8 *keysArray = const_cast<Uint8 *>(SDL_GetKeyboardState(nullptr));
@@ -185,28 +185,28 @@ void SDLController::handle_events()
 
 void SDLController::rotate(float x, float y, float z)
 {
-  static float x_angle = 0;
-  static float y_angle = 0;
-  static float z_angle = 0;
+  static float x_angle = 0.0f;
+  static float y_angle = 0.0f;
+  static float z_angle = 0.0f;
 
   x_angle += x;
   y_angle += y;
   z_angle += z;
 
-  rotation_x.elements = {
-      {1, 0, 0},
-      {0, std::cos(x_angle), std::sin(x_angle)},
-      {0, -std::sin(x_angle), std::cos(x_angle)}};
+    rotation_x.elements = {
+      {1.0f, 0.0f, 0.0f},
+      {0.0f, std::cos(x_angle), std::sin(x_angle)},
+      {0.0f, -std::sin(x_angle), std::cos(x_angle)}};
 
   rotation_z.elements = {
-      {std::cos(z_angle), -std::sin(z_angle), 0},
-      {std::sin(z_angle), std::cos(z_angle), 0},
-      {0, 0, 1}};
+      {std::cos(z_angle), -std::sin(z_angle), 0.0f},
+      {std::sin(z_angle), std::cos(z_angle), 0.0f},
+      {0.0f, 0.0f, 1.0f, 0.0f}};
 
   rotation_y.elements = {
-      {std::cos(y_angle), 0, -std::sin(y_angle)},
-      {0, 1, 0},
-      {std::sin(y_angle), 0, std::cos(y_angle)}};
+      {std::cos(y_angle), 0.0f, std::sin(y_angle)},
+      {0.0f, 1.0f, 0.0f},
+      {-std::sin(y_angle), 0.0f, std::cos(y_angle)}};
 }
 
 void SDLController::connect(int i, int j, const std::vector<Vector3D> &vertices)
