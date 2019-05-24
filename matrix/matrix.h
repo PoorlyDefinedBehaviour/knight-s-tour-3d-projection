@@ -214,7 +214,7 @@ public:
     {
       for (auto j = 0; j < result.columns; j++)
       {
-        result.elements[i][j] = func(this->elements[i][j]);
+        result[i][j] = func(this->elements[i][j]);
       }
     }
     return result;

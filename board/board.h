@@ -31,19 +31,20 @@ private:
                                             std::make_pair(-2, -1)};
   std::vector<MatrixPosition> path;
   Matrix<BoardState> grid;
-  Matrix<int> solution;
+
   const int cell_size = 50;
   const int cube_size = 100;
-  int knight_starting_row = 0;
-  int knight_starting_column = 0;
   const int knight_path_drawing_delay = 60;
+
   int size = 8;
   int minimum_steps_for_knights_tour = size * size;
+  int knight_starting_row = 0;
+  int knight_starting_column = 0;
   int current_index_for_2d_path = 0;
   int current_index_for_3d_path = 0;
 
-  bool is_move_valid(int row, int column) const noexcept;
-  bool is_visited(int row, int column) const noexcept;
+  bool is_move_valid(int row, int column);
+  bool is_visited(int row, int column);
   std::pair<int, int> get_move_with_less_neighbours(int row, int column);
   bool find_path(int step_count, int row, int column);
   void reset();

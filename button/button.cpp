@@ -53,8 +53,10 @@ void Button::handle_events()
     auto mouse_pos = SDLController::get_mouse_position();
     const int &mouse_x = mouse_pos.first;
     const int &mouse_y = mouse_pos.second;
-    if (mouse_x > x && mouse_x < x + width && mouse_y > y && mouse_y < y + height)
+    if (mouse_x > x && mouse_x < x + width && mouse_y > y && mouse_y < y + height){
       click_handler();
+      SDLController::sleep(500);
+    }
   }
 }
 

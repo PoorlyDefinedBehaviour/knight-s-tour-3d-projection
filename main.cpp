@@ -59,7 +59,6 @@ int main()
     increaseMinimumTourSteps.draw();
     decreaseMinimumTourSteps.draw();
 
-    SDLController::update_screen();
     SDLController::end_frame();
   }
 }

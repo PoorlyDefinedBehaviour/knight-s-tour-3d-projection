@@ -193,7 +193,7 @@ void SDLController::rotate(float x, float y, float z)
   y_angle += y;
   z_angle += z;
 
-    rotation_x.elements = {
+  rotation_x.elements = {
       {1.0f, 0.0f, 0.0f},
       {0.0f, std::cos(x_angle), std::sin(x_angle)},
       {0.0f, -std::sin(x_angle), std::cos(x_angle)}};
@@ -299,6 +299,7 @@ void SDLController::start_frame()
 
 void SDLController::end_frame()
 {
+  SDLController::update_screen();
   frameTime = SDL_GetTicks() - frameStart;
   if (frameDelay > frameTime)
   {

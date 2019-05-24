@@ -36,7 +36,6 @@ void Board::resize(int size)
   this->size = size;
   this->minimum_steps_for_knights_tour = this->size * this->size;
   this->reset();
-  std::cout << "New board size: " << this->size << " x " << this->size << '\n';
 }
 
 void Board::set_mininum_tour_steps(int steps)
@@ -46,7 +45,6 @@ void Board::set_mininum_tour_steps(int steps)
 
   this->minimum_steps_for_knights_tour = steps;
   this->reset();
-  std::cout << "New minimum steps for tour: " << this->minimum_steps_for_knights_tour << '\n';
 }
 
 int Board::get_minimum_tour_steps() const noexcept
@@ -63,9 +61,9 @@ void Board::reset()
   this->knight_starting_row = this->knight_starting_column = 0;
 }
 
-bool Board::is_visited(int row, int column)
+bool Board::is_visited(int row, int column) const noexcept
 {
-  return grid[row][column] != BoardState::NOT_VISITED;
+  return this->grid.elements[row][column] != BoardState::NOT_VISITED;
 }
 
 void Board::draw_2d()
@@ -236,15 +234,20 @@ void Board::draw_mouse_position()
 
 void Board::find_knights_path()
 {
-  this->grid.fill([&]() -> BoardState {
-    return BoardState::NOT_VISITED;
-  });
-  this->path.clear();
-
-  this->grid[this->knight_starting_row][this->knight_starting_column] = BoardState::VISITED;
+  this->solution.resize(this->size, this->size);
+  this->solution.fill([&]() { return -1; });
 
   std::cout << "Searching..." << '\n';
   std::cout << "Minimum steps: " << this->minimum_steps_for_knights_tour << " -> " << (!this->find_path(1, this->knight_starting_row, this->knight_starting_column) ? "No solution found..." : "Solution found!") << '\n';
+
+  for (int i = 0; i < this->size; ++i)
+  {
+    for (int j = 0; j < this->size; ++j)
+    {
+      if (this->solution.elements[i][j] != -1)
+        this->path.emplace_back(MatrixPosition{i, j, this->solution.elements[i][j]});
+    }
+  }
 
   std::sort(this->path.begin(),
             this->path.end(),
@@ -267,28 +270,27 @@ bool Board::find_path(int step_count, int row, int column)
 
     if (is_move_valid(next_row, next_column))
     {
-      this->grid[next_row][next_column] = BoardState::VISITED;
+      this->solution.elements[next_row][next_column] = step_count;
 
       if (find_path(step_count + 1, next_row, next_column))
       {
-        this->path.push_back({next_row, next_column, step_count});
         return true;
       }
 
-      this->grid[next_row][next_column] = BoardState::NOT_VISITED;
+        this->solution.elements[next_row][next_column] = -1;
     }
   }
 
   return false;
 }
 
-bool Board::is_move_valid(int row, int column)
+bool Board::is_move_valid(int row, int column) const noexcept
 {
   return row >= 0 &&
          column >= 0 &&
          row < this->size &&
          column < this->size &&
-         this->grid[row][column] == BoardState::NOT_VISITED;
+         this->solution.elements[row][column] == -1;
 }
 
 int Board::get_size() const noexcept

@@ -1,7 +1,7 @@
 #pragma once
 
 #define SDL_MAIN_HANDLED
-#include "../include/SDL2/SDL.h"
+#include <SDL2/SDL.h>
 #include "../vector/vector.h"
 #include "../matrix/matrix.h"
 #include <vector>
