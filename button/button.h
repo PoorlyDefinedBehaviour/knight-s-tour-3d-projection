@@ -5,8 +5,10 @@ enum class ButtonType
 {
     START,
     TOGGLE,
-    INCREASE,
-    DECREASE
+    INCREASE_DARK,
+    DECREASE_DARK,
+    INCREASE_LIGHT,
+    DECREASE_LIGHT
 };
 
 class Button

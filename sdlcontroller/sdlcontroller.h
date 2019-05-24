@@ -19,7 +19,8 @@ public:
                      SDL_Rect *destination,
                      SDL_Rect *source = nullptr,
                      const SDL_RendererFlip &flip = SDL_FLIP_NONE);
-  static void render_rectangle(const float &x, const float &y, const int &width, const int &height);
+  static void render_rectangle(float x, float y, int width, int height);
+  static void render_cube(float x, float y, float z, float size);
   static void render_shape(const std::vector<Vector3D> vertices);
   static void render_point(int x, int y);
   static void render_line(int x1, int y1, int x2, int y2);
@@ -37,13 +38,12 @@ public:
   static int WINDOW_HEIGHT;
   static int WINDOW_HALF_WIDTH;
   static int WINDOW_HALF_HEIGHT;
-  static Matrix<float> projection;
+  static Matrix<float> ortographic;
   static Matrix<float> perspective;
   static Matrix<float> isometric;
   static Matrix<float> rotation_z;
   static Matrix<float> rotation_x;
   static Matrix<float> rotation_y;
-  static std::vector<Vector3D> basic_cube_vertices;
   static SDL_Event event_handler;
 
 private:

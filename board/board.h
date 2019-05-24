@@ -33,8 +33,10 @@ private:
   Matrix<BoardState> grid;
 
   const int cell_size = 50;
-  const int cube_size = 100;
+  const int cube_size = 50;
   const int knight_path_drawing_delay = 60;
+  int board3d_starting_position_x = 0;
+  int board3d_starting_position_y = 0;
 
   int size = 8;
   int minimum_steps_for_knights_tour = size * size;
@@ -45,8 +47,9 @@ private:
 
   bool is_move_valid(int row, int column);
   bool is_visited(int row, int column);
-  std::pair<int, int> get_move_with_less_neighbours(int row, int column);
   bool find_path(int step_count, int row, int column);
+
+  std::pair<int, int> get_move_with_less_neighbours(int row, int column);
   void reset();
 
 public:

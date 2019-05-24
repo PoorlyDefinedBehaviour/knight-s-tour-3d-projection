@@ -13,22 +13,22 @@ int main()
     board.find_knights_path();
   });
 
-  Button increaseBoardSizeButton(1100, 650, 50, 50, ButtonType::INCREASE);
+  Button increaseBoardSizeButton(1100, 650, 50, 50, ButtonType::INCREASE_LIGHT);
   increaseBoardSizeButton.on_click([&]() -> void {
     board.resize(board.get_size() + 1);
   });
 
-  Button decreaseBoardSizeButton(1000, 650, 50, 50, ButtonType::DECREASE);
+  Button decreaseBoardSizeButton(1000, 650, 50, 50, ButtonType::DECREASE_LIGHT);
   decreaseBoardSizeButton.on_click([&]() -> void {
     board.resize(board.get_size() - 1);
   });
 
-  Button increaseMinimumTourSteps(900, 650, 50, 50, ButtonType::INCREASE);
+  Button increaseMinimumTourSteps(900, 650, 50, 50, ButtonType::INCREASE_DARK);
   increaseMinimumTourSteps.on_click([&]() -> void {
     board.set_mininum_tour_steps(board.get_minimum_tour_steps() + 1);
   });
 
-  Button decreaseMinimumTourSteps(800, 650, 50, 50, ButtonType::DECREASE);
+  Button decreaseMinimumTourSteps(800, 650, 50, 50, ButtonType::DECREASE_DARK);
   decreaseMinimumTourSteps.on_click([&]() -> void {
     board.set_mininum_tour_steps(board.get_minimum_tour_steps() - 1);
   });

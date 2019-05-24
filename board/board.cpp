@@ -10,6 +10,9 @@ Board::Board()
 
 void Board::handle_events()
 {
+  const int board_position_change_speed = 10;
+  Uint8 *keysArray = const_cast<Uint8 *>(SDL_GetKeyboardState(nullptr));
+
   if (SDLController::event_handler.type == SDL_MOUSEBUTTONDOWN && SDLController::event_handler.button.button == SDL_BUTTON(SDL_BUTTON_LEFT))
   {
     SDL_PollEvent(&SDLController::event_handler);
@@ -24,7 +27,28 @@ void Board::handle_events()
     {
       this->knight_starting_row = row;
       this->knight_starting_column = column;
+      this->reset();
     }
+  }
+
+  if (keysArray[SDL_SCANCODE_W])
+  {
+    this->board3d_starting_position_y += (-board_position_change_speed);
+  }
+
+  if (keysArray[SDL_SCANCODE_S])
+  {
+    this->board3d_starting_position_y += (board_position_change_speed);
+  }
+
+  if (keysArray[SDL_SCANCODE_A])
+  {
+    this->board3d_starting_position_x += (-board_position_change_speed);
+  }
+
+  if (keysArray[SDL_SCANCODE_D])
+  {
+    this->board3d_starting_position_x += board_position_change_speed;
   }
 }
 
@@ -35,6 +59,7 @@ void Board::resize(int size)
 
   this->size = size;
   this->minimum_steps_for_knights_tour = this->size * this->size;
+  this->knight_starting_row = this->knight_starting_column = 0;
   this->reset();
   std::cout << "New board size: " << this->size << " x " << this->size << '\n';
 }
@@ -45,6 +70,7 @@ void Board::set_mininum_tour_steps(int steps)
     return;
 
   this->minimum_steps_for_knights_tour = steps;
+  this->knight_starting_row = this->knight_starting_column = 0;
   this->reset();
   std::cout << "New minimum steps for tour: " << this->minimum_steps_for_knights_tour << '\n';
 }
@@ -60,7 +86,6 @@ void Board::reset()
   this->grid.fill([&]() { return BoardState::NOT_VISITED; });
   this->path.clear();
   this->current_index_for_2d_path = this->current_index_for_3d_path = 0;
-  this->knight_starting_row = this->knight_starting_column = 0;
 }
 
 bool Board::is_visited(int row, int column)
@@ -93,29 +118,15 @@ void Board::draw_2d()
 
 void Board::draw_3d()
 {
-  std::vector<Vector3D> projected_points;
-
   SDLController::set_color(46, 125, 50);
   for (auto i = 0; i < this->grid.rows; ++i)
   {
     for (auto j = 0; j < this->grid.columns; ++j)
     {
-      for (auto point : SDLController::basic_cube_vertices)
-      {
-        point.x += i * cube_size;
-        point.y += j * cube_size;
-        auto rotated = SDLController::rotation_z * point;
-        rotated = SDLController::rotation_y * rotated;
-        rotated = SDLController::rotation_x * rotated;
-        auto projected = SDLController::projection * rotated;
-        auto p = projected.to_vector3d();
-        p.translate(400, 300, 0);
-        p.multiply(0.5);
-        projected_points.emplace_back(p);
-      }
-
-      SDLController::render_shape(projected_points);
-      projected_points.clear();
+      SDLController::render_cube(this->board3d_starting_position_x + i * this->cube_size,
+                                 this->board3d_starting_position_y + j * this->cube_size,
+                                 0,
+                                 this->cube_size);
     }
   }
 }
@@ -165,27 +176,7 @@ void Board::draw_knights_path_2d()
 
 void Board::draw_knights_path_3d()
 {
-  std::vector<Vector3D> projected_points;
   static int time_passed = 0;
-
-  SDLController::set_color(255, 0, 0);
-  for (auto point : SDLController::basic_cube_vertices)
-  {
-    point.x += this->knight_starting_row * cube_size;
-    point.y += this->knight_starting_column * cube_size;
-    point.z += 400;
-    auto rotated = SDLController::rotation_z * point;
-    rotated = SDLController::rotation_y * rotated;
-    rotated = SDLController::rotation_x * rotated;
-    auto projected = SDLController::projection * rotated;
-    auto p = projected.to_vector3d();
-    p.translate(400, 300, 0);
-    p.multiply(0.5);
-    projected_points.emplace_back(p);
-  }
-
-  SDLController::render_shape(projected_points);
-  projected_points.clear();
 
   if (++time_passed >= this->knight_path_drawing_delay)
   {
@@ -196,25 +187,12 @@ void Board::draw_knights_path_3d()
   }
 
   SDLController::set_color(255, 0, 0);
-  for (auto i = 0; i < current_index_for_3d_path; ++i)
+  for (auto i = 0; i < this->current_index_for_3d_path; ++i)
   {
-    for (auto point : SDLController::basic_cube_vertices)
-    {
-      point.x += this->path[i].row * cube_size;
-      point.y += this->path[i].column * cube_size;
-      point.z += 400;
-      auto rotated = SDLController::rotation_z * point;
-      rotated = SDLController::rotation_y * rotated;
-      rotated = SDLController::rotation_x * rotated;
-      auto projected = SDLController::projection * rotated;
-      auto p = projected.to_vector3d();
-      p.translate(400, 300, 0);
-      p.multiply(0.5);
-      projected_points.emplace_back(p);
-    }
-
-    SDLController::render_shape(projected_points);
-    projected_points.clear();
+    SDLController::render_cube(this->board3d_starting_position_x + this->path[i].row * this->cube_size,
+                               this->board3d_starting_position_y + this->path[i].column * this->cube_size,
+                               300,
+                               this->cube_size);
   }
 }
 
@@ -236,15 +214,16 @@ void Board::draw_mouse_position()
 
 void Board::find_knights_path()
 {
-  this->grid.fill([&]() -> BoardState {
-    return BoardState::NOT_VISITED;
-  });
-  this->path.clear();
+  this->reset();
 
   this->grid[this->knight_starting_row][this->knight_starting_column] = BoardState::VISITED;
 
   std::cout << "Searching..." << '\n';
-  std::cout << "Minimum steps: " << this->minimum_steps_for_knights_tour << " -> " << (!this->find_path(1, this->knight_starting_row, this->knight_starting_column) ? "No solution found..." : "Solution found!") << '\n';
+  std::cout << "Minimum steps: "
+            << this->minimum_steps_for_knights_tour
+            << " -> "
+            << (!this->find_path(1, this->knight_starting_row, this->knight_starting_column) ? "No solution found..." : "Solution found!")
+            << '\n';
 
   std::sort(this->path.begin(),
             this->path.end(),
@@ -279,6 +258,7 @@ bool Board::find_path(int step_count, int row, int column)
     }
   }
 
+  SDLController::handle_events();
   return false;
 }
 
