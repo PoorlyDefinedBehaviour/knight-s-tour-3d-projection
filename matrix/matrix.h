@@ -27,9 +27,11 @@ private:
       throw std::out_of_range("Invalid index");
   }
 
-public:
   int rows;
   int columns;
+
+public:
+
   std::vector<std::vector<T>> elements;
 
   Matrix() = default;
@@ -38,6 +40,14 @@ public:
       : rows(_rows), columns(_columns)
   {
     this->resize(this->rows, this->columns);
+  }
+
+  int get_rows() const {
+      return this->rows;
+  }
+
+  int get_columns() const {
+      return this->columns;
   }
 
   std::vector<T> &operator[](size_t index)

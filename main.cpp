@@ -27,14 +27,14 @@ int main()
                                          board.resize(board.get_size() - 1);
                                      });
 
-    Button increaseMinimumTourSteps(900, 650, 50, 50, ButtonType::INCREASE_DARK);
-    increaseMinimumTourSteps.on_click([&]() -> void {
-                                          board.set_mininum_tour_steps(board.get_minimum_tour_steps() + 1);
+    Button increasePathDrawingDelay(900, 650, 50, 50, ButtonType::INCREASE_DARK);
+    increasePathDrawingDelay.on_click([&]() -> void {
+                                          board.set_path_drawing_delay(board.get_path_drawing_delay() + 10);
                                       });
 
-    Button decreaseMinimumTourSteps(800, 650, 50, 50, ButtonType::DECREASE_DARK);
-    decreaseMinimumTourSteps.on_click([&]() -> void {
-                                          board.set_mininum_tour_steps(board.get_minimum_tour_steps() - 1);
+    Button decreasePathDrawingDelay(800, 650, 50, 50, ButtonType::DECREASE_DARK);
+    decreasePathDrawingDelay.on_click([&]() -> void {
+                                          board.set_path_drawing_delay(board.get_path_drawing_delay() - 10);
                                       });
 
     while (true)
@@ -46,8 +46,8 @@ int main()
         startButton.handle_events();
         increaseBoardSizeButton.handle_events();
         decreaseBoardSizeButton.handle_events();
-        increaseMinimumTourSteps.handle_events();
-        decreaseMinimumTourSteps.handle_events();
+        increasePathDrawingDelay.handle_events();
+        decreasePathDrawingDelay.handle_events();
 
         board.draw_2d();
         board.draw_knights_path_2d();
@@ -60,8 +60,8 @@ int main()
         startButton.draw();
         increaseBoardSizeButton.draw();
         decreaseBoardSizeButton.draw();
-        increaseMinimumTourSteps.draw();
-        decreaseMinimumTourSteps.draw();
+        increasePathDrawingDelay.draw();
+        decreasePathDrawingDelay.draw();
 
         SDLController::end_frame();
     }
