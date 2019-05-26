@@ -214,7 +214,9 @@ void Board::draw_mouse_position()
 
 void Board::find_knights_path()
 {
+  this->knights_tour_thread_mutex.lock();
   this->reset();
+  this->knights_tour_thread_mutex.unlock();
 
   this->grid[this->knight_starting_row][this->knight_starting_column] = BoardState::VISITED;
 
@@ -228,47 +230,89 @@ void Board::find_knights_path()
   std::sort(this->path.begin(),
             this->path.end(),
             [](const auto &lhs, const auto &rhs) -> bool {
-              return lhs.step_count < rhs.step_count;
-            });
+    return lhs.step_count < rhs.step_count;
+  });
 }
 
 bool Board::find_path(int step_count, int row, int column)
 {
+  this->knights_tour_thread_mutex.lock();
   if (step_count == this->minimum_steps_for_knights_tour)
   {
+    this->knights_tour_thread_mutex.unlock();
     return true;
   }
+  this->knights_tour_thread_mutex.unlock();
 
-  for (const auto &move : this->moves)
+  this->knights_tour_thread_mutex.lock();
+  auto ordered_moves = get_ordered_moves(row, column);
+  this->knights_tour_thread_mutex.unlock();
+
+  for (const auto &move : ordered_moves)
   {
-    const int next_row = row + move.first;
-    const int next_column = column + move.second;
+    const int next_row = row + move.second.first;
+    const int next_column = column + move.second.second;
 
     if (is_move_valid(next_row, next_column))
     {
+      this->knights_tour_thread_mutex.lock();
       this->grid[next_row][next_column] = BoardState::VISITED;
-
+      this->knights_tour_thread_mutex.unlock();
       if (find_path(step_count + 1, next_row, next_column))
       {
+        this->knights_tour_thread_mutex.lock();
         this->path.push_back({next_row, next_column, step_count});
+        this->knights_tour_thread_mutex.unlock();
         return true;
       }
-
+      this->knights_tour_thread_mutex.lock();
       this->grid[next_row][next_column] = BoardState::NOT_VISITED;
+      this->knights_tour_thread_mutex.unlock();
     }
   }
 
   SDLController::handle_events();
+  this->knights_tour_thread_mutex.unlock();
   return false;
+}
+
+std::multimap<int, std::pair<int, int>> Board::get_ordered_moves(int current_row, int current_column)
+{
+  std::multimap<int, std::pair<int, int>> ordered_moves;
+
+  for (const auto &move : this->moves)
+  {
+    const int next_row = current_row + move.first;
+    const int next_column = current_column + move.second;
+
+    int neighbours = 0;
+    if (is_move_valid(next_row, next_column))
+    {
+      for (const auto &_move : this->moves)
+      {
+        const int _next_row = next_row + _move.first;
+        const int _next_column = next_column + _move.second;
+
+        if (is_move_valid(_next_row, _next_column))
+        {
+          ++neighbours;
+        }
+      }
+    }
+
+    ordered_moves.insert(std::make_pair(neighbours, move));
+  }
+
+  return ordered_moves;
 }
 
 bool Board::is_move_valid(int row, int column)
 {
   return row >= 0 &&
-         column >= 0 &&
-         row < this->size &&
-         column < this->size &&
-         this->grid[row][column] == BoardState::NOT_VISITED;
+      column >= 0 &&
+      row < this->size &&
+      column < this->size &&
+      this->grid[row][column] == BoardState::NOT_VISITED;
 }
 
 int Board::get_size() const noexcept
