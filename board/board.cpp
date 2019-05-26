@@ -54,11 +54,13 @@ void Board::handle_events()
 
 void Board::resize(int size)
 {
-  if (size < 3 || size > 8 || this->size == size)
+  if (size < 3 || size > 30 || this->size == size)
     return;
 
   this->size = size;
   this->minimum_steps_for_knights_tour = this->size * this->size;
+  this->cell_size = 500 / this->size;
+  this->cube_size = 500 / this->size;
   this->knight_starting_row = this->knight_starting_column = 0;
   this->reset();
   std::cout << "New board size: " << this->size << " x " << this->size << '\n';
@@ -133,7 +135,7 @@ void Board::draw_3d()
 
 void Board::draw_knights_path_2d()
 {
-  SDL_Point points[64];
+  std::vector<SDL_Point> points;
   static int time_passed = 0;
 
   SDLController::set_color(255, 0, 0);
@@ -141,11 +143,16 @@ void Board::draw_knights_path_2d()
                                   100 + this->knight_starting_column * this->cell_size,
                                   this->cell_size, this->cell_size);
 
+
   for (size_t i = 0; i < this->path.size(); ++i)
   {
-    points[i] = {(SDLController::WINDOW_WIDTH / 2 + this->path[i].row * this->cell_size) + cell_size / 2,
-                 100 + (this->path[i].column * cell_size) + cell_size / 2};
+    points.push_back({(SDLController::WINDOW_WIDTH / 2 + this->path[i].row * this->cell_size) + cell_size / 2,
+                 100 + (this->path[i].column * cell_size) + cell_size / 2});
+
+    if(i > this->current_index_for_2d_path)
+      break;
   }
+
 
   if (++time_passed >= this->knight_path_drawing_delay)
   {
@@ -160,18 +167,17 @@ void Board::draw_knights_path_2d()
 
   for (auto i = 0; i < current_index_for_2d_path; ++i)
   {
-    SDLController::set_color(198, 40, 40);
-
     auto current_cell = this->path[i];
 
-    SDLController::render_rectangle(SDLController::WINDOW_WIDTH / 2 + current_cell.row * this->cell_size,
+    SDLController::set_color(198, 40, 40);
+    SDLController::render_rectangle(SDLController::WINDOW_HALF_WIDTH + current_cell.row * this->cell_size,
                                     100 + current_cell.column * this->cell_size,
                                     this->cell_size,
                                     this->cell_size);
   }
 
   SDLController::set_color(46, 125, 50);
-  SDLController::render_lines(points, current_index_for_2d_path);
+  SDLController::render_lines(&points[0], current_index_for_2d_path);
 }
 
 void Board::draw_knights_path_3d()
