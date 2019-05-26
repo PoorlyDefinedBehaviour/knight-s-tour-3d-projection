@@ -54,7 +54,7 @@ void Board::handle_events()
 
 void Board::resize(int size)
 {
-  if (size < 3 || size > 30 || this->size == size)
+  if (size < 3 || this->size == size)
     return;
 
   this->size = size;
@@ -153,12 +153,11 @@ void Board::draw_knights_path_2d()
       break;
   }
 
-
   if (++time_passed >= this->knight_path_drawing_delay)
   {
     time_passed = 0;
 
-    if (++current_index_for_2d_path >= this->path.size())
+    if (++current_index_for_2d_path > this->path.size())
     {
       current_index_for_2d_path = 0;
       this->path.clear();
@@ -188,7 +187,7 @@ void Board::draw_knights_path_3d()
   {
     time_passed = 0;
 
-    if (++current_index_for_3d_path >= this->path.size())
+    if (++current_index_for_3d_path > this->path.size())
       current_index_for_3d_path = 0;
   }
 
