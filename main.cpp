@@ -10,7 +10,7 @@ int main()
 
     Button startButton(1200, 650, 50, 50, ButtonType::START);
     startButton.on_click([&board]() -> void {
-                             std::thread knights_tour_thread([&]() -> void {
+                             std::thread knights_tour_thread([&board]() -> void {
                                  board.find_knights_path();
                              });
 
@@ -18,22 +18,22 @@ int main()
                          });
 
     Button increaseBoardSizeButton(1100, 650, 50, 50, ButtonType::INCREASE_LIGHT);
-    increaseBoardSizeButton.on_click([&]() -> void {
+    increaseBoardSizeButton.on_click([&board]() -> void {
                                          board.resize(board.get_size() + 1);
                                      });
 
     Button decreaseBoardSizeButton(1000, 650, 50, 50, ButtonType::DECREASE_LIGHT);
-    decreaseBoardSizeButton.on_click([&]() -> void {
+    decreaseBoardSizeButton.on_click([&board]() -> void {
                                          board.resize(board.get_size() - 1);
                                      });
 
     Button increasePathDrawingDelay(900, 650, 50, 50, ButtonType::INCREASE_DARK);
-    increasePathDrawingDelay.on_click([&]() -> void {
+    increasePathDrawingDelay.on_click([&board]() -> void {
                                           board.set_path_drawing_delay(board.get_path_drawing_delay() + 10);
                                       });
 
     Button decreasePathDrawingDelay(800, 650, 50, 50, ButtonType::DECREASE_DARK);
-    decreasePathDrawingDelay.on_click([&]() -> void {
+    decreasePathDrawingDelay.on_click([&board]() -> void {
                                           board.set_path_drawing_delay(board.get_path_drawing_delay() - 10);
                                       });
 
@@ -49,12 +49,8 @@ int main()
         increasePathDrawingDelay.handle_events();
         decreasePathDrawingDelay.handle_events();
 
-        board.draw_2d();
-        board.draw_knights_path_2d();
-
-        board.draw_3d();
-        board.draw_knights_path_3d();
-
+        board.draw();
+        board.draw_paths();
         board.draw_mouse_position();
 
         startButton.draw();
@@ -62,7 +58,6 @@ int main()
         decreaseBoardSizeButton.draw();
         increasePathDrawingDelay.draw();
         decreasePathDrawingDelay.draw();
-
         SDLController::end_frame();
     }
 }
