@@ -48,6 +48,7 @@ private:
     int board3d_starting_position_x = 0;
     int board3d_starting_position_y = 0;
 
+    int get_num_neighbours(int row, int column);
     bool is_move_valid(int row, int column);
     bool is_visited(int row, int column);
     bool find_path(int step_count, int row, int column);

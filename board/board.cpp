@@ -258,6 +258,7 @@ bool Board::find_path(int step_count, int row, int column)
             this->knights_tour_thread_mutex.lock();
             this->grid[next_row][next_column] = BoardState::VISITED;
             this->knights_tour_thread_mutex.unlock();
+
             if (find_path(step_count + 1, next_row, next_column))
             {
                 this->knights_tour_thread_mutex.lock();
@@ -265,6 +266,7 @@ bool Board::find_path(int step_count, int row, int column)
                 this->knights_tour_thread_mutex.unlock();
                 return true;
             }
+
             this->knights_tour_thread_mutex.lock();
             this->grid[next_row][next_column] = BoardState::NOT_VISITED;
             this->knights_tour_thread_mutex.unlock();
@@ -285,25 +287,31 @@ std::multimap<int, std::pair<int, int>> Board::get_ordered_moves(int current_row
         const int next_row = current_row + move.first;
         const int next_column = current_column + move.second;
 
-        int neighbours = 0;
         if (is_move_valid(next_row, next_column))
         {
-            for (const auto &_move : this->moves)
-            {
-                const int _next_row = next_row + _move.first;
-                const int _next_column = next_column + _move.second;
-
-                if (is_move_valid(_next_row, _next_column))
-                {
-                    ++neighbours;
-                }
-            }
+            ordered_moves.insert(std::make_pair(get_num_neighbours(next_row, next_column), move));
         }
-
-        ordered_moves.insert(std::make_pair(neighbours, move));
     }
 
     return ordered_moves;
+}
+
+int Board::get_num_neighbours(int row, int column)
+{
+    int neighbours = 0;
+
+    for (const auto &move : this->moves)
+    {
+        const int next_row = row + move.first;
+        const int next_column = column + move.second;
+
+        if (is_move_valid(next_row, next_column))
+        {
+            ++neighbours;
+        }
+    }
+
+    return neighbours;
 }
 
 bool Board::is_move_valid(int row, int column)
