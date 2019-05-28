@@ -129,14 +129,13 @@ void Board::draw_3d()
 void Board::draw_paths()
 {
     static int time_passed = 0;
-    if (++time_passed > this->path_drawing_delay)
+    if (++time_passed >= this->path_drawing_delay)
     {
         time_passed = 0;
 
         if (++current_drawing_index > this->path.size())
         {
             current_drawing_index = 0;
-            this->path.clear();
         }
     }
 
@@ -149,12 +148,6 @@ void Board::draw_knights_path_2d()
     std::vector<SDL_Point> points;
     points.reserve(this->path.size());
 
-    SDLController::set_color(255, 0, 0);
-    SDLController::render_rectangle(SDLController::WINDOW_HALF_WIDTH + this->knight_starting_row * this->cell_size,
-                                    100 + this->knight_starting_column * this->cell_size,
-                                    this->cell_size,
-                                    this->cell_size);
-
     for (size_t i = 0; i < this->path.size(); ++i)
     {
         points.push_back({(SDLController::WINDOW_WIDTH / 2 + this->path[i].row * this->cell_size) + cell_size / 2,
@@ -164,11 +157,16 @@ void Board::draw_knights_path_2d()
             break;
     }
 
+    SDLController::set_color(198, 40, 40);
+    SDLController::render_rectangle(SDLController::WINDOW_HALF_WIDTH + this->knight_starting_row* this->cell_size,
+                                    100 + this->knight_starting_column * this->cell_size,
+                                    this->cell_size,
+                                    this->cell_size);
+
     for (size_t i = 0; i < current_drawing_index; ++i)
     {
         auto current_cell = this->path[i];
 
-        SDLController::set_color(198, 40, 40);
         SDLController::render_rectangle(SDLController::WINDOW_HALF_WIDTH + current_cell.row * this->cell_size,
                                         100 + current_cell.column * this->cell_size,
                                         this->cell_size,
