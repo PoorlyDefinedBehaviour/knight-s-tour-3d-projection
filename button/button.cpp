@@ -67,7 +67,7 @@ void Button::handle_events()
         SDL_PollEvent(&SDLController::event_handler);
         SDL_FlushEvents(SDL_MOUSEMOTION, SDL_MOUSEWHEEL);
         SDL_PumpEvents();
-        auto mouse_pos = SDLController::get_mouse_position();
+        const auto mouse_pos = SDLController::get_mouse_position();
         const int &mouse_x = mouse_pos.first;
         const int &mouse_y = mouse_pos.second;
         if (mouse_x > x && mouse_x < x + width && mouse_y > y && mouse_y < y + height)

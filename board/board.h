@@ -56,6 +56,7 @@ private:
     void draw_3d();
     void reset();
 
+    std::pair<int, int> get_board_pos_regarding_mouse();
     std::multimap<int, std::pair<int, int>> get_ordered_moves(int current_row, int current_column);
 
 public:
@@ -67,7 +68,6 @@ public:
     void set_path_drawing_delay(int delay);
     int get_path_drawing_delay() const;
     int get_size() const noexcept;
-    std::pair<int, int> get_board_pos_regarding_mouse();
 
     void draw();
     void draw_paths();
