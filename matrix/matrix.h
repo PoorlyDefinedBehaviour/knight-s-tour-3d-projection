@@ -29,11 +29,9 @@ private:
 
     size_t rows;
     size_t columns;
-
-public:
-
     std::vector<std::vector<T>> elements;
 
+public:
     Matrix() = default;
 
     Matrix(size_t _rows, size_t _columns)
@@ -60,6 +58,10 @@ public:
         return this->columns;
     }
 
+    Matrix<T>& operator=(const std::vector<std::vector<T>> elements){
+        this->elements = elements;
+    }
+
     std::vector<T> &operator[](size_t index)
     {
         assert_index_is_valid(index);
@@ -78,7 +80,7 @@ public:
             for (size_t j = 0; j < other.columns; ++j)
             {
 
-                auto sum = 0.0;
+                auto sum = 0.0f;
                 for (size_t k = 0; k < columns; ++k)
                 {
                     sum += elements[i][k] * other.elements[k][j];
@@ -212,6 +214,7 @@ public:
     std::vector<T> to_stdvector()
     {
         std::vector<T> result;
+        result.reserve(this->rows * this->columns);
 
         for (size_t i = 0; i < this->rows; ++i)
             for (size_t j = 0; j < this->columns; ++j)

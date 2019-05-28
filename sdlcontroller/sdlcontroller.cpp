@@ -43,23 +43,10 @@ void SDLController::create_window(const int &_width, const int &_height, const b
     rotation_x.resize(3, 3);
     rotation_y.resize(3, 3);
 
-    ortographic.elements = {{1.0f, 0.0f, 0.0f},
-                            {0.0f, 1, 0.0f}};
+    ortographic = {{1.0f, 0.0f, 0.0f},
+                   {0.0f, 1, 0.0f}};
 
-    rotation_z.elements = {
-        {std::cos(0.0f), -std::sin(0.0f), 0.0f},
-        {std::sin(0.0f), std::cos(0.0f), 0.0f},
-        {0.0f, 0.0f, 1.0f, 0.0f}};
-
-    rotation_x.elements = {
-        {1.0f, 0.0f, 0.0f},
-        {0.0f, std::cos(0.0f), std::sin(0.0f)},
-        {0.0f, -std::sin(0.0f), std::cos(0.0f)}};
-
-    rotation_y.elements = {
-        {std::cos(0.0f), 0.0f, std::sin(0.0f)},
-        {0.0f, 1.0f, 0.0f},
-        {-std::sin(0.0f), 0.0f, std::cos(0.0f)}};
+    rotate(0, 0, 0);
 }
 
 void SDLController::sleep(size_t ms)
@@ -121,17 +108,17 @@ void SDLController::rotate(float x, float y, float z)
     y_angle += y;
     z_angle += z;
 
-    rotation_x.elements = {
+    rotation_x = {
         {1.0f, 0.0f, 0.0f},
         {0.0f, std::cos(x_angle), std::sin(x_angle)},
         {0.0f, -std::sin(x_angle), std::cos(x_angle)}};
 
-    rotation_z.elements = {
+    rotation_z = {
         {std::cos(z_angle), -std::sin(z_angle), 0.0f},
         {std::sin(z_angle), std::cos(z_angle), 0.0f},
         {0.0f, 0.0f, 1.0f, 0.0f}};
 
-    rotation_y.elements = {
+    rotation_y = {
         {std::cos(y_angle), 0.0f, std::sin(y_angle)},
         {0.0f, 1.0f, 0.0f},
         {-std::sin(y_angle), 0.0f, std::cos(y_angle)}};
