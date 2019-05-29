@@ -207,14 +207,11 @@ void Board::draw_mouse_position()
 
 void Board::find_knights_path()
 {
-    this->knights_tour_thread_mutex.lock();
     this->reset();
     this->path.reserve(this->size * this->size);
-    this->knights_tour_thread_mutex.unlock();
 
-    this->knights_tour_thread_mutex.lock();
+
     this->grid[this->knight_starting_row][this->knight_starting_column] = BoardState::VISITED;
-    this->knights_tour_thread_mutex.unlock();
 
     std::cout << "Searching...\n"
               << "Minimum steps: "
@@ -232,17 +229,9 @@ void Board::find_knights_path()
 
 bool Board::find_path(int step_count, int row, int column)
 {
-    this->knights_tour_thread_mutex.lock();
-    if (step_count == this->size * this->size)
-    {
-        this->knights_tour_thread_mutex.unlock();
-        return true;
-    }
-    this->knights_tour_thread_mutex.unlock();
+    if (step_count == this->size * this->size) return true;
 
-    this->knights_tour_thread_mutex.lock();
     const auto ordered_moves = get_ordered_moves(row, column);
-    this->knights_tour_thread_mutex.unlock();
 
     for (const auto &move : ordered_moves)
     {
@@ -251,26 +240,20 @@ bool Board::find_path(int step_count, int row, int column)
 
         if (is_move_valid(next_row, next_column))
         {
-            this->knights_tour_thread_mutex.lock();
             this->grid[next_row][next_column] = BoardState::VISITED;
-            this->knights_tour_thread_mutex.unlock();
 
             if (find_path(step_count + 1, next_row, next_column))
             {
-                this->knights_tour_thread_mutex.lock();
                 this->path.push_back({next_row, next_column, step_count});
-                this->knights_tour_thread_mutex.unlock();
+
                 return true;
             }
 
-            this->knights_tour_thread_mutex.lock();
             this->grid[next_row][next_column] = BoardState::NOT_VISITED;
-            this->knights_tour_thread_mutex.unlock();
         }
     }
 
     SDLController::handle_events();
-    this->knights_tour_thread_mutex.unlock();
     return false;
 }
 

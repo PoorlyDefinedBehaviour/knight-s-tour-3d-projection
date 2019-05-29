@@ -4,7 +4,6 @@
 #include <array>
 #include <map>
 #include <thread>
-#include <mutex>
 
 class Vector3D;
 
@@ -24,7 +23,6 @@ private:
         VISITED
     };
 
-    std::mutex knights_tour_thread_mutex;
     std::vector<std::pair<int, int>> moves = { std::make_pair(-2, 1),
                                                std::make_pair(-1, 2),
                                                std::make_pair(1, 2),
