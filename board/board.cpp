@@ -20,11 +20,9 @@ void Board::handle_events()
         SDL_FlushEvents(SDL_MOUSEMOTION, SDL_MOUSEWHEEL);
         SDL_PumpEvents();
 
-        auto position = this->get_board_pos_regarding_mouse();
-        const int &row = position.first;
-        const int &column = position.second;
+        const auto [ row, column ] = this->get_board_pos_regarding_mouse();
 
-        if (row != -1 && column != -1)
+                if (row != -1 && column != -1)
         {
             this->knight_starting_row = row;
             this->knight_starting_column = column;
@@ -145,8 +143,7 @@ void Board::draw_paths()
 
 void Board::draw_knights_path_2d()
 {
-    std::vector<SDL_Point> points;
-    points.reserve(this->path.size());
+    std::vector<SDL_Point> points(this->path.size());
 
     for (size_t i = 0; i < this->path.size(); ++i)
     {
@@ -191,25 +188,21 @@ void Board::draw_knights_path_3d()
 
 void Board::draw_mouse_position()
 {
-    const auto position = this->get_board_pos_regarding_mouse();
+    const auto [ row, column ] = this->get_board_pos_regarding_mouse();
 
-    if (position.first == -1 || position.second == -1)
-        return;
+            if (row == -1 || column == -1) return;
 
-    const int &row = position.first;
-    const int &column = position.second;
-
-    SDLController::render_rectangle(SDLController::WINDOW_HALF_WIDTH + row * this->cell_size,
-                                    100 + column * this->cell_size,
-                                    this->cell_size,
-                                    this->cell_size);
+            SDLController::render_rectangle(SDLController::WINDOW_HALF_WIDTH + row * this->cell_size,
+            100 + column * this->cell_size,
+            this->cell_size,
+            this->cell_size);
 }
+
 
 void Board::find_knights_path()
 {
     this->reset();
     this->path.reserve(this->size * this->size);
-
 
     this->grid[this->knight_starting_row][this->knight_starting_column] = BoardState::VISITED;
 
@@ -220,11 +213,9 @@ void Board::find_knights_path()
               << (this->find_path(1, this->knight_starting_row, this->knight_starting_column) ? "Solution found!" : "No solution found...")
               << '\n';
 
-    std::sort(this->path.begin(),
-              this->path.end(),
-              [](const auto &lhs, const auto &rhs) -> bool {
-        return lhs.step_count < rhs.step_count;
-    });
+    std::sort(this->path.begin(), this->path.end(), [](auto &lhs, auto &rhs) -> bool {
+            return lhs.step_count < rhs.step_count;
+        });
 }
 
 bool Board::find_path(int step_count, int row, int column)
@@ -235,22 +226,22 @@ bool Board::find_path(int step_count, int row, int column)
 
     for (const auto &move : ordered_moves)
     {
-        const int next_row = row + move.second.first;
-        const int next_column = column + move.second.second;
+         const int next_row = row + move.second.first;
+         const int next_column = column + move.second.second;
 
-        if (is_move_valid(next_row, next_column))
-        {
-            this->grid[next_row][next_column] = BoardState::VISITED;
+         if (is_move_valid(next_row, next_column))
+         {
+             this->grid[next_row][next_column] = BoardState::VISITED;
 
-            if (find_path(step_count + 1, next_row, next_column))
-            {
-                this->path.push_back({next_row, next_column, step_count});
+             if (find_path(step_count + 1, next_row, next_column))
+             {
+                 this->path.push_back({next_row, next_column, step_count});
 
-                return true;
-            }
+                 return true;
+             }
 
-            this->grid[next_row][next_column] = BoardState::NOT_VISITED;
-        }
+             this->grid[next_row][next_column] = BoardState::NOT_VISITED;
+         }
     }
 
     SDLController::handle_events();
@@ -284,10 +275,7 @@ int Board::get_num_neighbours(int row, int column)
         const int next_row = row + move.first;
         const int next_column = column + move.second;
 
-        if (is_move_valid(next_row, next_column))
-        {
-            ++neighbours;
-        }
+        if (is_move_valid(next_row, next_column)) ++neighbours;
     }
 
     return neighbours;
@@ -296,10 +284,10 @@ int Board::get_num_neighbours(int row, int column)
 bool Board::is_move_valid(int row, int column)
 {
     return row >= 0 &&
-            column >= 0 &&
-            row < this->size &&
-            column < this->size &&
-            this->grid[row][column] == BoardState::NOT_VISITED;
+           column >= 0 &&
+           row < this->size &&
+           column < this->size &&
+           this->grid[row][column] == BoardState::NOT_VISITED;
 }
 
 int Board::get_size() const noexcept
@@ -309,14 +297,14 @@ int Board::get_size() const noexcept
 
 std::pair<int, int> Board::get_board_pos_regarding_mouse()
 {
-    const auto mouse_pos = SDLController::get_mouse_position();
-    const int &x = mouse_pos.first;
-    const int &y = mouse_pos.second;
+    const auto [x, y] = SDLController::get_mouse_position();
 
-    if (x < SDLController::WINDOW_HALF_WIDTH || y < 100 ||
-            x > (SDLController::WINDOW_HALF_WIDTH + this->size * this->cell_size) || y > (100 + this->size * this->cell_size))
+    if (x < SDLController::WINDOW_HALF_WIDTH ||
+        y < 100 ||
+        x > (SDLController::WINDOW_HALF_WIDTH + this->size * this->cell_size) ||
+        y > (100 + this->size * this->cell_size))
     {
-        return {-1, -1};
+            return {-1, -1};
     }
 
     const int row = (x - SDLController::WINDOW_HALF_WIDTH) / this->cell_size;
