@@ -10,7 +10,7 @@ Button::Button(float x, float y, float width, float height, ButtonType type)
     this->height = height;
 }
 
-void Button::draw()
+void Button::draw() const
 {
     SDLController::set_color(255, 255, 255);
     SDLController::render_rectangle(x, y, width, height);

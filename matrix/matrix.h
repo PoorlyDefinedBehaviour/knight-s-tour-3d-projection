@@ -69,6 +69,13 @@ public:
         return this->elements[index];
     }
 
+    const std::vector<T> &operator[](size_t index) const
+    {
+        assert_index_is_valid(index);
+
+        return this->elements[index];
+    }
+
     Matrix operator*(const Matrix &other)
     {
         assert_dot_product_is_possible(*this, other);

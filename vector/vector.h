@@ -9,7 +9,7 @@ public:
   float y;
   float z;
 
-  float get_magnitude();
+  float get_magnitude() const;
   void set_magnitude(float new_magnitude);
   void multiply(float number);
   void translate(float x, float y, float z);

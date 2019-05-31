@@ -23,7 +23,7 @@ private:
 
 public:
     Button(float x, float y, float width, float height, ButtonType type);
-    void draw();
+    void draw() const;
     void handle_events();
     void on_click(const std::function<void(void)> &click_handler);
 };

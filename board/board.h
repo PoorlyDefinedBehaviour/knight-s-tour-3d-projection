@@ -44,8 +44,8 @@ private:
     int board3d_starting_position_x = 0;
     int board3d_starting_position_y = 0;
 
-    int get_num_neighbours(int row, int column);
-    bool is_move_valid(int row, int column);
+    int get_num_neighbours(int row, int column) const;
+    bool is_move_valid(int row, int column) const;
     bool is_visited(size_t row, size_t column);
     bool find_path(int step_count, int row, int column);
     void draw_knights_path_3d();
@@ -54,8 +54,8 @@ private:
     void draw_3d();
     void reset();
 
-    std::pair<int, int> get_board_pos_regarding_mouse();
-    std::multimap<int, std::pair<int, int>> get_ordered_moves(int current_row, int current_column);
+    std::pair<int, int> get_board_pos_regarding_mouse() const;
+    std::multimap<int, std::pair<int, int>> get_ordered_moves(int current_row, int current_column) const;
 
 public:
     Board();
@@ -64,10 +64,10 @@ public:
     void find_knights_path();
 
     void set_path_drawing_delay(int delay);
-    int get_path_drawing_delay() const;
+    int get_path_drawing_delay() const noexcept;
     int get_size() const noexcept;
 
     void draw();
     void draw_paths();
-    void draw_mouse_position();
+    void draw_mouse_position() const;
 };

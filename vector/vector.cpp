@@ -6,7 +6,7 @@ Vector3D::Vector3D(float _x, float _y, float _z)
 {
 }
 
-float Vector3D::get_magnitude()
+float Vector3D::get_magnitude() const
 {
     return std::sqrt((x * x) + (y * y) + (z * z));
 }

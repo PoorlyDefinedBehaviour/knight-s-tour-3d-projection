@@ -68,7 +68,7 @@ void Board::set_path_drawing_delay(int delay){
     std::cout << "New path drawing delay: " << this->path_drawing_delay << '\n';
 }
 
-int Board::get_path_drawing_delay() const {
+int Board::get_path_drawing_delay() const noexcept {
     return this->path_drawing_delay;
 }
 
@@ -143,7 +143,8 @@ void Board::draw_paths()
 
 void Board::draw_knights_path_2d()
 {
-    std::vector<SDL_Point> points(this->path.size());
+    std::vector<SDL_Point> points;
+    points.reserve(this->path.size());
 
     for (size_t i = 0; i < this->path.size(); ++i)
     {
@@ -186,7 +187,7 @@ void Board::draw_knights_path_3d()
     }
 }
 
-void Board::draw_mouse_position()
+void Board::draw_mouse_position() const
 {
     const auto [ row, column ] = this->get_board_pos_regarding_mouse();
 
@@ -203,7 +204,6 @@ void Board::find_knights_path()
 {
     this->reset();
     this->path.reserve(this->size * this->size);
-
     this->grid[this->knight_starting_row][this->knight_starting_column] = BoardState::VISITED;
 
     std::cout << "Searching...\n"
@@ -248,7 +248,7 @@ bool Board::find_path(int step_count, int row, int column)
     return false;
 }
 
-std::multimap<int, std::pair<int, int>> Board::get_ordered_moves(int current_row, int current_column)
+std::multimap<int, std::pair<int, int>> Board::get_ordered_moves(int current_row, int current_column) const
 {
     std::multimap<int, std::pair<int, int>> ordered_moves;
 
@@ -266,7 +266,7 @@ std::multimap<int, std::pair<int, int>> Board::get_ordered_moves(int current_row
     return ordered_moves;
 }
 
-int Board::get_num_neighbours(int row, int column)
+int Board::get_num_neighbours(int row, int column) const
 {
     int neighbours = 0;
 
@@ -281,7 +281,7 @@ int Board::get_num_neighbours(int row, int column)
     return neighbours;
 }
 
-bool Board::is_move_valid(int row, int column)
+bool Board::is_move_valid(int row, int column) const
 {
     return row >= 0 &&
            column >= 0 &&
@@ -295,7 +295,7 @@ int Board::get_size() const noexcept
     return this->size;
 }
 
-std::pair<int, int> Board::get_board_pos_regarding_mouse()
+std::pair<int, int> Board::get_board_pos_regarding_mouse() const
 {
     const auto [x, y] = SDLController::get_mouse_position();
 
