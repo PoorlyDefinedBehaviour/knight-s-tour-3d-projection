@@ -15,12 +15,6 @@ You will need to install SDL2
 
 After installing the dependencies, it's recommended to compile using C++ 2017.
 
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
-
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
